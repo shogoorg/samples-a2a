@@ -1,0 +1,350 @@
+{
+  "eval_cases": [
+    {
+      "prompt": {
+        "parts": [
+          {
+            "text": "Hello, what can you help me with?"
+          }
+        ],
+        "role": "user"
+      },
+      "responses": [
+        {
+          "response": {
+            "parts": [
+              {
+                "text": "I am the UCP Grocery Store shopping assistant! I can help you with your shopping needs, including:\n\n1.  **Searching** for products in our catalog.\n2.  **Adding** items to your cart.\n3.  **Collecting** your delivery and contact details.\n4.  **Finalizing** your order.\n\nWhat are you looking to buy today?"
+              }
+            ],
+            "role": "model"
+          }
+        }
+      ],
+      "eval_case_id": "greeting",
+      "agent_data": {
+        "agents": {
+          "root_agent": {
+            "agent_id": "root_agent",
+            "agent_type": "LlmAgent",
+            "description": "An ADK shopping assistant for UCP Grocery Store.",
+            "instruction": "You are a helpful shopping assistant for the UCP Grocery Store. Your goal is to guide the user through their shopping journey:\n1. Help them search for products using 'search_shopping_catalog'.\n2. Add their selected items to checkout using 'add_to_checkout'.\n3. Ask the user for their delivery details (name, address, postal code, email) and save them using 'update_customer_details'.\n4. Finalize the order using 'complete_checkout' once details are filled.",
+            "tools": [
+              {
+                "function_declarations": [
+                  {
+                    "description": "Search the product catalog for products that match the given query.\n\nArgs:\n    query: The search term (e.g. cookies, strawberries, chips).",
+                    "name": "search_shopping_catalog",
+                    "parameters_json_schema": {
+                      "properties": {
+                        "query": {
+                          "title": "Query",
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "query"
+                      ],
+                      "title": "search_shopping_catalogParams",
+                      "type": "object"
+                    },
+                    "response_json_schema": {
+                      "type": "string"
+                    }
+                  }
+                ]
+              },
+              {
+                "function_declarations": [
+                  {
+                    "description": "Add a product to the checkout session.\n\nArgs:\n    tool_context: The tool context containing session state.\n    product_id: The ID or SKU of the product to add (e.g., BISC-001).\n    quantity: The quantity of the product to add. Defaults to 1.",
+                    "name": "add_to_checkout",
+                    "parameters_json_schema": {
+                      "properties": {
+                        "product_id": {
+                          "title": "Product Id",
+                          "type": "string"
+                        },
+                        "quantity": {
+                          "default": 1,
+                          "title": "Quantity",
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "product_id"
+                      ],
+                      "title": "add_to_checkoutParams",
+                      "type": "object"
+                    },
+                    "response_json_schema": {
+                      "type": "string"
+                    }
+                  }
+                ]
+              },
+              {
+                "function_declarations": [
+                  {
+                    "description": "Add delivery address and email to the checkout session.\n\nArgs:\n    tool_context: The tool context containing session state.\n    first_name: First name of the recipient.\n    last_name: Last name of the recipient.\n    street_address: The street address (e.g. 1600 Amphitheatre Pkwy).\n    address_locality: The city or locality.\n    address_region: The state or region.\n    postal_code: The postal code.\n    email: The customer's email address.",
+                    "name": "update_customer_details",
+                    "parameters_json_schema": {
+                      "properties": {
+                        "first_name": {
+                          "title": "First Name",
+                          "type": "string"
+                        },
+                        "last_name": {
+                          "title": "Last Name",
+                          "type": "string"
+                        },
+                        "street_address": {
+                          "title": "Street Address",
+                          "type": "string"
+                        },
+                        "address_locality": {
+                          "title": "Address Locality",
+                          "type": "string"
+                        },
+                        "address_region": {
+                          "title": "Address Region",
+                          "type": "string"
+                        },
+                        "postal_code": {
+                          "title": "Postal Code",
+                          "type": "string"
+                        },
+                        "email": {
+                          "title": "Email",
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "first_name",
+                        "last_name",
+                        "street_address",
+                        "address_locality",
+                        "address_region",
+                        "postal_code",
+                        "email"
+                      ],
+                      "title": "update_customer_detailsParams",
+                      "type": "object"
+                    },
+                    "response_json_schema": {
+                      "type": "string"
+                    }
+                  }
+                ]
+              },
+              {
+                "function_declarations": [
+                  {
+                    "description": "Process the payment and complete the checkout session.\n\nArgs:\n    tool_context: The tool context containing session state.",
+                    "name": "complete_checkout",
+                    "response_json_schema": {
+                      "type": "string"
+                    }
+                  }
+                ]
+              }
+            ],
+            "sub_agents": []
+          }
+        },
+        "turns": [
+          {
+            "turn_index": 0,
+            "turn_id": "turn_0",
+            "events": [
+              {
+                "author": "root_agent",
+                "content": {
+                  "parts": [
+                    {
+                      "text": "I am the UCP Grocery Store shopping assistant! I can help you with your shopping needs, including:\n\n1.  **Searching** for products in our catalog.\n2.  **Adding** items to your cart.\n3.  **Collecting** your delivery and contact details.\n4.  **Finalizing** your order.\n\nWhat are you looking to buy today?"
+                    }
+                  ],
+                  "role": "model"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "prompt": {
+        "parts": [
+          {
+            "text": "What tools do you have available?"
+          }
+        ],
+        "role": "user"
+      },
+      "responses": [
+        {
+          "response": {
+            "parts": [
+              {
+                "text": "I have the following tools to help you with your shopping at the UCP Grocery Store:\n\n1.  **`search_shopping_catalog(query)`**: Allows you to search for products in the store's catalog (e.g., cookies, strawberries, chips).\n2.  **`add_to_checkout(product_id, quantity)`**: Adds a specific product to your shopping cart/checkout session.\n3.  **`update_customer_details(...)`**: Collects and updates your delivery and contact information (name, address, email) for the order.\n4.  **`complete_checkout()`**: Finalizes the order, processes the payment, and completes the shopping session.\n\nHow can I help you start your shopping today?"
+              }
+            ],
+            "role": "model"
+          }
+        }
+      ],
+      "eval_case_id": "capability_query",
+      "agent_data": {
+        "agents": {
+          "root_agent": {
+            "agent_id": "root_agent",
+            "agent_type": "LlmAgent",
+            "description": "An ADK shopping assistant for UCP Grocery Store.",
+            "instruction": "You are a helpful shopping assistant for the UCP Grocery Store. Your goal is to guide the user through their shopping journey:\n1. Help them search for products using 'search_shopping_catalog'.\n2. Add their selected items to checkout using 'add_to_checkout'.\n3. Ask the user for their delivery details (name, address, postal code, email) and save them using 'update_customer_details'.\n4. Finalize the order using 'complete_checkout' once details are filled.",
+            "tools": [
+              {
+                "function_declarations": [
+                  {
+                    "description": "Search the product catalog for products that match the given query.\n\nArgs:\n    query: The search term (e.g. cookies, strawberries, chips).",
+                    "name": "search_shopping_catalog",
+                    "parameters_json_schema": {
+                      "properties": {
+                        "query": {
+                          "title": "Query",
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "query"
+                      ],
+                      "title": "search_shopping_catalogParams",
+                      "type": "object"
+                    },
+                    "response_json_schema": {
+                      "type": "string"
+                    }
+                  }
+                ]
+              },
+              {
+                "function_declarations": [
+                  {
+                    "description": "Add a product to the checkout session.\n\nArgs:\n    tool_context: The tool context containing session state.\n    product_id: The ID or SKU of the product to add (e.g., BISC-001).\n    quantity: The quantity of the product to add. Defaults to 1.",
+                    "name": "add_to_checkout",
+                    "parameters_json_schema": {
+                      "properties": {
+                        "product_id": {
+                          "title": "Product Id",
+                          "type": "string"
+                        },
+                        "quantity": {
+                          "default": 1,
+                          "title": "Quantity",
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "product_id"
+                      ],
+                      "title": "add_to_checkoutParams",
+                      "type": "object"
+                    },
+                    "response_json_schema": {
+                      "type": "string"
+                    }
+                  }
+                ]
+              },
+              {
+                "function_declarations": [
+                  {
+                    "description": "Add delivery address and email to the checkout session.\n\nArgs:\n    tool_context: The tool context containing session state.\n    first_name: First name of the recipient.\n    last_name: Last name of the recipient.\n    street_address: The street address (e.g. 1600 Amphitheatre Pkwy).\n    address_locality: The city or locality.\n    address_region: The state or region.\n    postal_code: The postal code.\n    email: The customer's email address.",
+                    "name": "update_customer_details",
+                    "parameters_json_schema": {
+                      "properties": {
+                        "first_name": {
+                          "title": "First Name",
+                          "type": "string"
+                        },
+                        "last_name": {
+                          "title": "Last Name",
+                          "type": "string"
+                        },
+                        "street_address": {
+                          "title": "Street Address",
+                          "type": "string"
+                        },
+                        "address_locality": {
+                          "title": "Address Locality",
+                          "type": "string"
+                        },
+                        "address_region": {
+                          "title": "Address Region",
+                          "type": "string"
+                        },
+                        "postal_code": {
+                          "title": "Postal Code",
+                          "type": "string"
+                        },
+                        "email": {
+                          "title": "Email",
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "first_name",
+                        "last_name",
+                        "street_address",
+                        "address_locality",
+                        "address_region",
+                        "postal_code",
+                        "email"
+                      ],
+                      "title": "update_customer_detailsParams",
+                      "type": "object"
+                    },
+                    "response_json_schema": {
+                      "type": "string"
+                    }
+                  }
+                ]
+              },
+              {
+                "function_declarations": [
+                  {
+                    "description": "Process the payment and complete the checkout session.\n\nArgs:\n    tool_context: The tool context containing session state.",
+                    "name": "complete_checkout",
+                    "response_json_schema": {
+                      "type": "string"
+                    }
+                  }
+                ]
+              }
+            ],
+            "sub_agents": []
+          }
+        },
+        "turns": [
+          {
+            "turn_index": 0,
+            "turn_id": "turn_0",
+            "events": [
+              {
+                "author": "root_agent",
+                "content": {
+                  "parts": [
+                    {
+                      "text": "I have the following tools to help you with your shopping at the UCP Grocery Store:\n\n1.  **`search_shopping_catalog(query)`**: Allows you to search for products in the store's catalog (e.g., cookies, strawberries, chips).\n2.  **`add_to_checkout(product_id, quantity)`**: Adds a specific product to your shopping cart/checkout session.\n3.  **`update_customer_details(...)`**: Collects and updates your delivery and contact information (name, address, email) for the order.\n4.  **`complete_checkout()`**: Finalizes the order, processes the payment, and completes the shopping session.\n\nHow can I help you start your shopping today?"
+                    }
+                  ],
+                  "role": "model"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}
