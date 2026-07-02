@@ -56,7 +56,7 @@ agents-cli run "Show me cookies in stock"
 agents-cli run "Add BISC-001 to my checkout"
 
 # 3. Register shipping address and details (calls 'update_customer_details')
-agents-cli run "Set my shipping info: name is Shogo Suzuki, address is 1600 Amphitheatre Pkwy, Mountain View, CA, postal code is 94043, email is shogo@example.com"
+agents-cli run "Set my shipping info: name is John Doe, address is 1600 Amphitheatre Pkwy, Mountain View, CA, postal code is 94043, email is john.doe@example.com"
 
 # 4. Finalize payment and place order (calls 'complete_checkout')
 agents-cli run "Complete my checkout now"
@@ -72,7 +72,7 @@ agents-cli run "在庫があるクッキーを見せてください"
 agents-cli run "私のチェックアウトに BISC-001 を追加してください"
 
 # 3. 配送先情報の登録テスト
-agents-cli run "私の配送情報を設定してください：名前は Shogo Suzuki、住所は 1600 Amphitheatre Pkwy, Mountain View, CA、郵便番号は 94043、メールアドレスは shogo@example.com です"
+agents-cli run "私の配送情報を設定してください：名前は John Doe、住所は 1600 Amphitheatre Pkwy, Mountain View, CA、郵便番号は 94043、メールアドレスは john.doe@example.com です"
 
 # 4. 決済完了テスト
 agents-cli run "今すぐ私のチェックアウトを完了してください"
