@@ -78,6 +78,29 @@ agents-cli run "私の配送情報を設定してください：名前は John D
 agents-cli run "今すぐ私のチェックアウトを完了してください"
 ```
 
+### 2. Run the A2A Business Agent (Python/Starlette)
+
+This directory hosts the standalone **A2A Business Agent (Python/Starlette)** implementation.
+
+Start the A2A Business Agent on port `10999`:
+
+```bash
+cd business_agent
+uv run business_agent
+```
+
+### 3. Run the Chat Client (Vite/React)
+
+This directory hosts the standalone **Chat Client (Vite/React)** frontend.
+
+Install dependencies and start the development server on port `3000`:
+
+```bash
+cd client
+npm install
+npm run dev
+```
+
 ## Commands
 
 | Command              | Description                                                                                 |
