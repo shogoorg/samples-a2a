@@ -6,12 +6,10 @@ authors = [
     {name = "Your Name", email = "your@email.com"},
 ]
 
-
-
 dependencies = [
     "google-adk[gcp]>=2.0.0,<3.0.0",
     "a2a-sdk[http-server]~=0.3.22",
-    "nest-asyncio>=1.6.0,<2.0.0",
+    "aiohttp>=3.13.4",
     "opentelemetry-instrumentation-google-genai>=0.1.0,<1.0.0",
     "gcsfs>=2024.11.0",
     "google-cloud-logging>=3.12.0,<4.0.0",
@@ -87,8 +85,6 @@ deprecated = "ignore"
 [tool.codespell]
 ignore-words-list = "rouge"
 skip = "./locust_env/*,uv.lock,.venv,./frontend,**/package-lock.json"
-
-
 
 
 [build-system]

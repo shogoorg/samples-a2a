@@ -11,96 +11,70 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
+import contextlib
 import os
 from collections.abc import AsyncIterator
-from contextlib import asynccontextmanager
 
 import google.auth
-from a2a.server.apps import A2AFastAPIApplication
-from a2a.server.request_handlers import DefaultRequestHandler
 from a2a.server.tasks import InMemoryTaskStore
-from a2a.types import AgentCapabilities, AgentCard, AgentExtension
-from a2a.utils.constants import (
-    AGENT_CARD_WELL_KNOWN_PATH,
-    EXTENDED_AGENT_CARD_PATH,
-)
+from dotenv import load_dotenv
 from fastapi import FastAPI
-from google.adk.a2a.executor.a2a_agent_executor import A2aAgentExecutor
-from google.adk.a2a.utils.agent_card_builder import AgentCardBuilder
-from google.adk.artifacts import GcsArtifactService, InMemoryArtifactService
+from google.adk.cli.fast_api import get_fast_api_app
 from google.adk.runners import Runner
-from google.adk.sessions import InMemorySessionService
 from google.cloud import logging as google_cloud_logging
 
-from app.agent import app as adk_app
+from app.app_utils import services
+from app.app_utils.a2a import attach_a2a_routes
 from app.app_utils.telemetry import setup_telemetry
 from app.app_utils.typing import Feedback
 
+load_dotenv()
 setup_telemetry()
 _, project_id = google.auth.default()
 logging_client = google_cloud_logging.Client()
 logger = logging_client.logger(__name__)
-
-# Artifact bucket for ADK (created by Terraform, passed via env var)
-logs_bucket_name = os.environ.get("LOGS_BUCKET_NAME")
-artifact_service = (
-    GcsArtifactService(bucket_name=logs_bucket_name)
-    if logs_bucket_name
-    else InMemoryArtifactService()
+allow_origins = (
+    os.getenv("ALLOW_ORIGINS", "").split(",") if os.getenv("ALLOW_ORIGINS") else None
 )
 
-runner = Runner(
-    app=adk_app,
-    artifact_service=artifact_service,
-    session_service=InMemorySessionService(),
-)
-
-request_handler = DefaultRequestHandler(
-    agent_executor=A2aAgentExecutor(runner=runner),
-    task_store=InMemoryTaskStore(),
-)
-
-A2A_RPC_PATH = f"/a2a/{adk_app.name}"
+AGENT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
-async def build_dynamic_agent_card() -> AgentCard:
-    """Builds the Agent Card dynamically from the root_agent."""
-    agent_card_builder = AgentCardBuilder(
-        agent=adk_app.root_agent,
-        capabilities=AgentCapabilities(
-            streaming=True,
-            extensions=[
-                AgentExtension(
-                    uri="https://google.github.io/adk-docs/a2a/a2a-extension/",
-                    description="Ability to use the new agent executor implementation",
-                ),
-            ],
-        ),
-        rpc_url=f"{os.getenv('APP_URL', 'http://0.0.0.0:8000')}{A2A_RPC_PATH}",
-        agent_version=os.getenv("AGENT_VERSION", "0.1.0"),
+@contextlib.asynccontextmanager
+async def lifespan(app: FastAPI) -> AsyncIterator[None]:
+    from app.agent import app as adk_app
+    from app.agent import root_agent
+
+    runner = Runner(
+        app=adk_app,
+        session_service=services.get_session_service(),
+        artifact_service=services.get_artifact_service(),
+        auto_create_session=True,
     )
-    agent_card = await agent_card_builder.build()
-    return agent_card
-
-
-@asynccontextmanager
-async def lifespan(app_instance: FastAPI) -> AsyncIterator[None]:
-    agent_card = await build_dynamic_agent_card()
-    a2a_app = A2AFastAPIApplication(agent_card=agent_card, http_handler=request_handler)
-    a2a_app.add_routes_to_app(
-        app_instance,
-        agent_card_url=f"{A2A_RPC_PATH}{AGENT_CARD_WELL_KNOWN_PATH}",
-        rpc_url=A2A_RPC_PATH,
-        extended_agent_card_url=f"{A2A_RPC_PATH}{EXTENDED_AGENT_CARD_PATH}",
+    app.state.runner = runner
+    app.state.agent_app_name = adk_app.name
+    await attach_a2a_routes(
+        app,
+        agent=root_agent,
+        runner=runner,
+        task_store=InMemoryTaskStore(),
+        rpc_path=f"/a2a/{adk_app.name}",
     )
     yield
 
 
-app = FastAPI(
-    title="agent",
-    description="API for interacting with the Agent agent",
+app: FastAPI = get_fast_api_app(
+    agents_dir=AGENT_DIR,
+    web=True,
+    artifact_service_uri=services.ARTIFACT_SERVICE_URI,
+    allow_origins=allow_origins,
+    session_service_uri=services.SESSION_SERVICE_URI,
+    otel_to_cloud=False,
     lifespan=lifespan,
 )
+app.title = "agent"
+app.description = "API for interacting with the Agent agent"
 
 
 @app.post("/feedback")

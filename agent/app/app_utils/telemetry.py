@@ -22,7 +22,9 @@ from google.adk.telemetry.setup import maybe_set_otel_providers
 
 
 def setup_telemetry() -> str | None:
-    """Configure OpenTelemetry and GenAI telemetry with GCS upload."""
+    """Configure GenAI prompt/response logging via OpenTelemetry."""
+    # Keep full prompts/responses out of trace span attributes (use GenAI logging instead).
+    os.environ.setdefault("ADK_CAPTURE_MESSAGE_CONTENT_IN_SPANS", "false")
 
     bucket = os.environ.get("LOGS_BUCKET_NAME")
     capture_content = os.environ.get(

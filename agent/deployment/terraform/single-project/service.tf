@@ -26,10 +26,27 @@ resource "google_cloud_run_v2_service" "app" {
   template {
     containers {
       image = "us-docker.pkg.dev/cloudrun/container/hello"
+
       env {
         name  = "APP_URL"
         value = "https://${var.project_name}-${data.google_project.project.number}.${var.region}.run.app"
       }
+
+      env {
+        name  = "GOOGLE_CLOUD_PROJECT"
+        value = var.project_id
+      }
+
+      env {
+        name  = "GOOGLE_CLOUD_LOCATION"
+        value = "global"
+      }
+
+      env {
+        name  = "GOOGLE_GENAI_USE_VERTEXAI"
+        value = "True"
+      }
+
       resources {
         limits = {
           cpu    = "1"

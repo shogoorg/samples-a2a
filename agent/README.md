@@ -1,7 +1,7 @@
 # agent
 
-ReAct agent with A2A protocol [experimental]
-Agent generated with `agents-cli` version `0.5.0`
+Simple ReAct agent
+Agent generated with `agents-cli` version `1.0.0`
 
 ## Project Structure
 
@@ -16,7 +16,7 @@ agent/
 └── pyproject.toml             # Project dependencies
 ```
 
-> 💡 **Tip:** Use [Gemini CLI](https://github.com/google-gemini/gemini-cli) for AI-assisted development - project context is pre-configured in `GEMINI.md`.
+> 💡 **Tip:** Use [Antigravity CLI](https://antigravity.google/) for AI-assisted development - project context is pre-configured in `GEMINI.md`.
 
 ## Requirements
 
@@ -57,8 +57,7 @@ You can also use features from the [ADK](https://adk.dev/) CLI with `uv run adk`
 | `agents-cli lint`    | Run code quality checks                                                               |
 | `agents-cli eval`    | Evaluate agent behavior (generate, grade, analyze, and more — see `agents-cli eval --help`) |
 | `uv run pytest tests/unit tests/integration` | Run unit and integration tests                                                        |
-| `agents-cli deploy`  | Deploy agent to Cloud Run                                                                   |
-| [A2A Inspector](https://github.com/a2aproject/a2a-inspector) | Launch A2A Protocol Inspector                                                        |
+| `agents-cli deploy`  | Deploy agent to Cloud Run                                                                   || [A2A Inspector](https://github.com/a2aproject/a2a-inspector) | Launch A2A Protocol Inspector                                                        |
 
 ## 🛠️ Project Management
 

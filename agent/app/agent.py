@@ -19,19 +19,11 @@ from zoneinfo import ZoneInfo
 from google.adk.agents import Agent
 from google.adk.apps import App
 from google.adk.models import Gemini
-from google.adk.tools import LongRunningFunctionTool
 from google.genai import types
 
-import os
-import google.auth
+
 import random
 from google.adk.tools.tool_context import ToolContext
-
-_, project_id = google.auth.default()
-os.environ["GOOGLE_CLOUD_PROJECT"] = project_id
-os.environ["GOOGLE_CLOUD_LOCATION"] = "global"
-os.environ["GOOGLE_GENAI_USE_VERTEXAI"] = "True"
-
 
 # UCP/A2A の商品カタログ (products.json に準拠)
 PRODUCTS = {
@@ -40,7 +32,6 @@ PRODUCTS = {
     "CHIPS-001": {"title": "Classic Potato Chips", "price": 3.79},
     "SW-CHIPS-001": {"title": "Baked Sweet Potato Chips", "price": 4.79},
 }
-
 
 def search_shopping_catalog(query: str) -> str:
     """Search the product catalog for products that match the given query.
@@ -60,7 +51,6 @@ def search_shopping_catalog(query: str) -> str:
     for pid, info in matches:
         res += f"- [ID: {pid}] {info['title']} - ${info['price']}\n"
     return res
-
 
 def add_to_checkout(tool_context: ToolContext, product_id: str, quantity: int = 1) -> str:
     """Add a product to the checkout session.
@@ -99,7 +89,6 @@ def add_to_checkout(tool_context: ToolContext, product_id: str, quantity: int = 
         summary += "All details are set. You can now complete your purchase by running 'complete_checkout'."
         
     return summary
-
 
 def update_customer_details(
     tool_context: ToolContext,
@@ -147,7 +136,6 @@ def update_customer_details(
     res += "Everything is ready! Please run 'complete_checkout' to finish your purchase."
     return res
 
-
 def complete_checkout(tool_context: ToolContext) -> str:
     """Process the payment and complete the checkout session.
 
@@ -178,14 +166,12 @@ def complete_checkout(tool_context: ToolContext) -> str:
     
     return res
 
-
 root_agent = Agent(
     name="root_agent",
     model=Gemini(
         model="gemini-flash-latest",
         retry_options=types.HttpRetryOptions(attempts=3),
     ),
-    description="An ADK shopping assistant for UCP Grocery Store.",
     instruction=(
         "You are a helpful shopping assistant for the UCP Grocery Store. "
         "Your goal is to guide the user through their shopping journey:\n"
@@ -194,12 +180,7 @@ root_agent = Agent(
         "3. Ask the user for their delivery details (name, address, postal code, email) and save them using 'update_customer_details'.\n"
         "4. Finalize the order using 'complete_checkout' once details are filled."
     ),
-    tools=[
-        search_shopping_catalog,
-        add_to_checkout,
-        update_customer_details,
-        complete_checkout,
-    ],
+    tools=[search_shopping_catalog, add_to_checkout, update_customer_details, complete_checkout],
 )
 
 app = App(
