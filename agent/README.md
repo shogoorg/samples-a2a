@@ -113,6 +113,13 @@ agents-cli deploy
 To add CI/CD and Terraform, run `agents-cli scaffold enhance`.
 To set up your production infrastructure, run `agents-cli infra cicd`.
 
+### Dev UI & A2A Endpoints (After Deployment)
+
+Once deployed and allowed for public access (`gcloud run services add-iam-policy-binding`):
+* **Playground (Dev UI)**: Accessible at `https://<YOUR_SERVICE_URL>/dev-ui/`
+* **A2A JSON-RPC Endpoint**: `https://<YOUR_SERVICE_URL>/a2a/app`
+* **Agent Card**: `https://<YOUR_SERVICE_URL>/a2a/app/.well-known/agent-card.json`
+
 ## Observability
 
 Built-in telemetry exports to Cloud Trace, BigQuery, and Cloud Logging.
