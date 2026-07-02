@@ -40,13 +40,43 @@ Install required packages:
 agents-cli install
 ```
 
-Test the agent with a local web server:
+Start the interactive development playground:
 
 ```bash
 agents-cli playground
 ```
 
-You can also use features from the [ADK](https://adk.dev/) CLI with `uv run adk`.
+Or test the agent directly from your terminal using commands to run through the entire shopping flow:
+
+```bash
+# 1. Search products (calls 'search_shopping_catalog')
+agents-cli run "Show me cookies in stock"
+
+# 2. Add product to checkout (calls 'add_to_checkout')
+agents-cli run "Add BISC-001 to my checkout"
+
+# 3. Register shipping address and details (calls 'update_customer_details')
+agents-cli run "Set my shipping info: name is Shogo Suzuki, address is 1600 Amphitheatre Pkwy, Mountain View, CA, postal code is 94043, email is shogo@example.com"
+
+# 4. Finalize payment and place order (calls 'complete_checkout')
+agents-cli run "Complete my checkout now"
+```
+
+Example commands in Japanese (to run the entire shopping flow using Japanese prompts):
+
+```bash
+# 1. 商品の検索テスト
+agents-cli run "在庫があるクッキーを見せてください"
+
+# 2. カート追加テスト
+agents-cli run "私のチェックアウトに BISC-001 を追加してください"
+
+# 3. 配送先情報の登録テスト
+agents-cli run "私の配送情報を設定してください：名前は Shogo Suzuki、住所は 1600 Amphitheatre Pkwy, Mountain View, CA、郵便番号は 94043、メールアドレスは shogo@example.com です"
+
+# 4. 決済完了テスト
+agents-cli run "今すぐ私のチェックアウトを完了してください"
+```
 
 ## Commands
 
