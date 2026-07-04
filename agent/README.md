@@ -1,32 +1,39 @@
-# agent
+# Cymbal Retail Agent with UCP Extension and A2A
 
-Simple ReAct agent
-Agent generated with `agents-cli` version `1.0.0`
+This Project enables running the Cymbal Retail Agent with UCP Extension and A2A using agents-cli.
+
+agents-cli <https://github.com/Universal-Commerce-Protocol/samples/tree/main/rest/python/server> is a CLI and skill for building agents on the Gemini Enterprise Agent Platform.
+
+The Cymbal Retail Agent with UCP Extension and A2A <https://github.com/Universal-Commerce-Protocol/samples/tree/main/a2a> demonstrates how to build an AI-powered shopping assistant using Universal Commerce Protocol (UCP) - an open standard that enables interoperability between commerce platforms, merchants, and payment providers.
 
 ## Project Structure
 
 ```
 agent/
-├── app/         # Core agent code
-│   ├── agent.py               # Main agent logic
-│   ├── fast_api_app.py        # FastAPI Backend server
-│   └── app_utils/             # App utilities and helpers
+├── app/                       # Core ADK agent code
+│   ├── agent.py               # Main agent logic (customized Grocery Store assistant)
+│   ├── fast_api_app.py        # FastAPI backend server
+│   ├── store.py               # Integrated Retail Store state management
+│   ├── payment_processor.py   # Payment processor logic
+│   ├── app_utils/             # App utilities and helpers
+│   └── data/                  # Store data (products.json, ucp.json)
 ├── tests/                     # Unit, integration, and load tests
 ├── GEMINI.md                  # AI-assisted development guide
 └── pyproject.toml             # Project dependencies
 ```
 
-> 💡 **Tip:** Use [Antigravity CLI](https://antigravity.google/) for AI-assisted development - project context is pre-configured in `GEMINI.md`.
+> 💡 **Tip:** Use [Antigravity CLI](https://antigravity.google/) for AI-assisted development — project context is pre-configured in `GEMINI.md`.
 
 ## Requirements
 
 Before you begin, ensure you have:
-- **uv**: Python package manager (used for all dependency management in this project) - [Install](https://docs.astral.sh/uv/getting-started/installation/) ([add packages](https://docs.astral.sh/uv/concepts/dependencies/) with `uv add <package>`)
-- **agents-cli**: Agents CLI - Install with `uv tool install google-agents-cli`
-- **Google Cloud SDK**: For GCP services - [Install](https://cloud.google.com/sdk/docs/install)
-
+- **uv**: Python package manager (used for all dependency management in this project) — [Install](https://docs.astral.sh/uv/getting-started/installation/) ([add packages](https://docs.astral.sh/uv/concepts/dependencies/) with `uv add <package>`)
+- **agents-cli**: Agents CLI — Install with `uv tool install google-agents-cli`
+- **Google Cloud SDK**: For GCP services — [Install](https://cloud.google.com/sdk/docs/install)
 
 ## Quick Start
+
+This agent simulates a full customer shopping checkout flow referencing the **UCP (Universal Commerce Protocol)** and its A2A implementation.
 
 Install `agents-cli` and its skills if not already installed:
 
@@ -78,74 +85,54 @@ agents-cli run "私の配送情報を設定してください：名前は John D
 agents-cli run "今すぐ私のチェックアウトを完了してください"
 ```
 
-### 2. Run the A2A Business Agent (Python/Starlette)
-
-This directory hosts the standalone **A2A Business Agent (Python/Starlette)** implementation.
-
-Start the A2A Business Agent on port `10999`:
-
-```bash
-cd business_agent
-uv run business_agent
-```
-
-### 3. Run the Chat Client (Vite/React)
-
-This directory hosts the standalone **Chat Client (Vite/React)** frontend.
-
-Install dependencies and start the development server on port `3000`:
-
-```bash
-cd client
-npm install
-npm run dev
-```
+### Cloud Run Deployment
+If deploying the merchant server on Google Cloud:
+- **Server URL**: `https://<YOUR_UCP_SERVER_URL>`
+- **Discovery URL**: `https://<YOUR_UCP_SERVER_URL>/.well-known/ucp`
 
 ## Commands
 
-| Command              | Description                                                                                 |
-| -------------------- | ------------------------------------------------------------------------------------------- |
-| `agents-cli install` | Install dependencies using uv                                                         |
-| `agents-cli playground` | Launch local development environment                                                  |
-| `agents-cli lint`    | Run code quality checks                                                               |
-| `agents-cli eval`    | Evaluate agent behavior (generate, grade, analyze, and more — see `agents-cli eval --help`) |
-| `uv run pytest tests/unit tests/integration` | Run unit and integration tests                                                        |
-| `agents-cli deploy`  | Deploy agent to Cloud Run                                                                   || [A2A Inspector](https://github.com/a2aproject/a2a-inspector) | Launch A2A Protocol Inspector                                                        |
+| Command | Description |
+| :--- | :--- |
+| `agents-cli install` | Install agent dependencies using uv |
+| `agents-cli playground` | Launch local development playground |
+| `agents-cli lint` | Run code quality checks |
+| `agents-cli eval` | Evaluate agent behavior (generate, grade, analyze, and more — see `agents-cli eval --help`) |
+| `uv run pytest tests/unit tests/integration` | Run unit and integration tests |
 
 ## 🛠️ Project Management
 
 | Command | What It Does |
-|---------|--------------|
+| :--- | :--- |
 | `agents-cli scaffold enhance` | Add CI/CD pipelines and Terraform infrastructure |
-| `agents-cli infra cicd` | One-command setup of entire CI/CD pipeline + infrastructure |
-| `agents-cli scaffold upgrade` | Auto-upgrade to latest version while preserving customizations |
+| `agents-cli infra cicd` | Set up the entire CI/CD pipeline and infrastructure with a single command |
+| `agents-cli scaffold upgrade` | Automatically upgrade to the latest version while preserving customizations |
 
 ---
 
 ## Development
 
-Edit your agent logic in `app/agent.py` and test with `agents-cli playground` - it auto-reloads on save.
+Edit your agent logic in `agent/app/agent.py` and test it with `agents-cli playground` — it automatically reloads on save.
 
 ## Deployment
 
+Deploy the ADK Agent to Cloud Run and expose it publicly:
+
 ```bash
-gcloud config set project <your-project-id>
-agents-cli deploy
+# 1. Deploy the agent
+agents-cli deploy --project=<YOUR_PROJECT_ID> --no-confirm-project
+
+# 2. Expose the service to allow public access
+gcloud run services add-iam-policy-binding samples-a2a \
+  --member="allUsers" \
+  --role="roles/run.invoker" \
+  --region=us-east1 \
+  --project=<YOUR_PROJECT_ID>
 ```
-
-To add CI/CD and Terraform, run `agents-cli scaffold enhance`.
-To set up your production infrastructure, run `agents-cli infra cicd`.
-
-### Dev UI & A2A Endpoints (After Deployment)
-
-Once deployed and allowed for public access (`gcloud run services add-iam-policy-binding`):
-* **Playground (Dev UI)**: Accessible at `https://<YOUR_SERVICE_URL>/dev-ui/`
-* **A2A JSON-RPC Endpoint**: `https://<YOUR_SERVICE_URL>/a2a/app`
-* **Agent Card**: `https://<YOUR_SERVICE_URL>/a2a/app/.well-known/agent-card.json`
 
 ## Observability
 
-Built-in telemetry exports to Cloud Trace, BigQuery, and Cloud Logging.
+Built-in telemetry automatically exports data to Cloud Trace, BigQuery, and Cloud Logging.
 
 ## A2A Inspector
 
