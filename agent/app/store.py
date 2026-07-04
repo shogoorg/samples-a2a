@@ -78,6 +78,7 @@ class RetailStore:
         self._orders = {}
         self._initialize_ucp_metadata()
         self._initialize_products()
+        self._load_checkouts()
 
     def _initialize_ucp_metadata(self):
         """Load UCP metadata from data/ucp.json."""
@@ -96,6 +97,40 @@ class RetailStore:
                 # we only have products in the json file
                 product = Product.model_validate(product_data)
                 self._products[product.product_id] = product
+
+    def _save_checkouts(self):
+        """Persist checkouts to data/checkouts_db.json."""
+        try:
+            base_path = Path(__file__).parent
+            checkouts_path = base_path / "data" / "checkouts_db.json"
+            checkouts_path.parent.mkdir(parents=True, exist_ok=True)
+            data = {
+                cid: checkout.model_dump(mode="json")
+                for cid, checkout in self._checkouts.items()
+            }
+            with checkouts_path.open("w") as f:
+                json.dump(data, f)
+        except Exception:
+            import logging
+            logging.exception("Failed to save checkouts.")
+
+    def _load_checkouts(self):
+        """Restore checkouts from data/checkouts_db.json."""
+        try:
+            base_path = Path(__file__).parent
+            checkouts_path = base_path / "data" / "checkouts_db.json"
+            if checkouts_path.exists():
+                with checkouts_path.open() as f:
+                    data = json.load(f)
+                for cid, cdata in data.items():
+                    # Reconstruct metadata first
+                    from ucp_sdk.models.schemas.ucp import ResponseCheckout as UcpMetadata
+                    metadata = UcpMetadata.model_validate(cdata["ucp"])
+                    checkout_type = get_checkout_type(metadata)
+                    self._checkouts[cid] = checkout_type.model_validate(cdata)
+        except Exception:
+            import logging
+            logging.exception("Failed to load checkouts.")
 
     def search_products(self, query: str) -> ProductResults:
         """Search the product catalog for products that match the given query.
@@ -128,16 +163,22 @@ class RetailStore:
         return ProductResults(results=product_list)
 
     def get_product(self, product_id: str) -> Product | None:
-        """Retrieve a product by its SKU.
+        """Retrieve a product by its SKU or product ID.
 
         Args:
-            product_id (str): Product ID
+            product_id (str): Product ID or SKU
 
         Returns:
             Product | None: Product object if found, None otherwise
 
         """
-        return self._products.get(product_id)
+        product = self._products.get(product_id)
+        if product:
+            return product
+        for p in self._products.values():
+            if p.sku == product_id:
+                return p
+        return None
 
     def _get_line_item(self, product: Product, quantity: int) -> LineItem:
         """Create a line item for a product.
@@ -221,7 +262,19 @@ class RetailStore:
         else:
             checkout = self._checkouts.get(checkout_id)
             if not checkout:
-                raise ValueError(f"Checkout with ID {checkout_id} not found")
+                checkout_type = get_checkout_type(metadata)
+                checkout = checkout_type(
+                    id=checkout_id,
+                    ucp=metadata,
+                    line_items=[],
+                    currency=DEFAULT_CURRENCY,
+                    totals=[],
+                    status="incomplete",
+                    links=[],
+                    payment=PaymentResponse(
+                        handlers=self._ucp_metadata["payment"]["handlers"]
+                    ),
+                )
 
         found = False
         for line_item in checkout.line_items:
@@ -235,6 +288,7 @@ class RetailStore:
 
         self._recalculate_checkout(checkout)
         self._checkouts[checkout_id] = checkout
+        self._save_checkouts()
 
         return checkout
 
@@ -273,6 +327,7 @@ class RetailStore:
 
         self._recalculate_checkout(checkout)
         self._checkouts[checkout_id] = checkout
+        self._save_checkouts()
         return checkout
 
     def update_checkout(
@@ -301,6 +356,7 @@ class RetailStore:
 
         self._recalculate_checkout(checkout)
         self._checkouts[checkout_id] = checkout
+        self._save_checkouts()
         return checkout
 
     def _recalculate_checkout(self, checkout: Checkout) -> None:
@@ -447,6 +503,7 @@ class RetailStore:
 
         self._recalculate_checkout(checkout)
         self._checkouts[checkout_id] = checkout
+        self._save_checkouts()
         return checkout
 
     def start_payment(self, checkout_id: str) -> Checkout | str:
@@ -479,6 +536,7 @@ class RetailStore:
         self._recalculate_checkout(checkout)
         checkout.status = "ready_for_complete"
         self._checkouts[checkout_id] = checkout
+        self._save_checkouts()
         return checkout
 
     def place_order(self, checkout_id: str) -> Checkout:
@@ -506,6 +564,7 @@ class RetailStore:
         self._orders[order_id] = checkout
         # Clear the checkout after placing the order
         del self._checkouts[checkout_id]
+        self._save_checkouts()
         return checkout
 
     def _get_fulfillment_options(self) -> list[FulfillmentOptionResponse]:
