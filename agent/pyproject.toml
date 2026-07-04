@@ -19,6 +19,7 @@ dependencies = [
     "python-multipart>=0.0.20,<1.0.0",
     "sqlalchemy>=2,<3",
     "uvicorn~=0.34.0",
+    "ucp-sdk==0.1.0",
 ]
 requires-python = ">=3.11,<3.14"
 

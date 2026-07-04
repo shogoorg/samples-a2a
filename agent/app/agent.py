@@ -21,17 +21,14 @@ from google.adk.apps import App
 from google.adk.models import Gemini
 from google.genai import types
 
-
-import random
+from app.store import RetailStore
+from ucp_sdk.models.schemas.shopping.types.postal_address import PostalAddress
+from ucp_sdk.models.schemas.shopping.types.buyer import Buyer
+from ucp_sdk.models.schemas.ucp import ResponseCheckout as UcpMetadata
 from google.adk.tools.tool_context import ToolContext
 
-# UCP/A2A の商品カタログ (products.json に準拠)
-PRODUCTS = {
-    "BISC-001": {"title": "Chocochip Cookies", "price": 4.99},
-    "STRAW-001": {"title": "Fresh Strawberries", "price": 4.49},
-    "CHIPS-001": {"title": "Classic Potato Chips", "price": 3.79},
-    "SW-CHIPS-001": {"title": "Baked Sweet Potato Chips", "price": 4.79},
-}
+# 移植したストアロジックのインスタンス化
+store = RetailStore()
 
 def search_shopping_catalog(query: str) -> str:
     """Search the product catalog for products that match the given query.
@@ -39,56 +36,57 @@ def search_shopping_catalog(query: str) -> str:
     Args:
         query: The search term (e.g. cookies, strawberries, chips).
     """
-    query_lower = query.lower()
-    matches = [
-        (pid, info) for pid, info in PRODUCTS.items()
-        if query_lower in pid.lower() or query_lower in info["title"].lower()
-    ]
-    if not matches:
-        return f"No products found matching '{query}'."
-    
+    results = store.search_products(query)
+    if not results.results:
+        return results.content or f"No products found matching '{query}'."
+
     res = "Available Products in Stock:\n"
-    for pid, info in matches:
-        res += f"- [ID: {pid}] {info['title']} - ${info['price']}\n"
+    for product in results.results:
+        price_usd = float(product.offers.price) if product.offers else 0.0
+        res += f"- [ID: {product.product_id}] {product.name} - ${price_usd:.2f}\n"
     return res
 
 def add_to_checkout(tool_context: ToolContext, product_id: str, quantity: int = 1) -> str:
-    """Add a product to the checkout session.
+    """Add a product to the active checkout session in the store database.
 
     Args:
         tool_context: The tool context containing session state.
         product_id: The ID or SKU of the product to add (e.g., BISC-001).
-        quantity: The quantity of the product to add. Defaults to 1.
+        quantity: The quantity of the product to add.
     """
-    if product_id not in PRODUCTS:
-        return f"Error: Product ID '{product_id}' does not exist. Please search for valid products first."
+    checkout_id = tool_context.state.get("checkout_id")
+    # UCPメタデータのダミーモックを用意
+    dummy_metadata = UcpMetadata(
+        version="2026-01-23",
+        capabilities=[]
+    )
     
-    if "cart" not in tool_context.state:
-        tool_context.state["cart"] = {}
-    
-    cart = tool_context.state["cart"]
-    cart[product_id] = cart.get(product_id, 0) + quantity
-    tool_context.state["cart"] = cart
-    
-    summary = "Current Cart Summary:\n"
-    total = 0.0
-    for pid, qty in cart.items():
-        pinfo = PRODUCTS[pid]
-        subtotal = pinfo["price"] * qty
-        total += subtotal
-        summary += f"- {pinfo['title']} (x{qty}) - ${subtotal:.2f}\n"
-    summary += f"Total Amount: ${total:.2f}\n\n"
-    
-    cust_info = tool_context.state.get("customer_info")
-    if not cust_info:
-        summary += (
-            "To complete the checkout, please provide your first name, last name, "
-            "street address, locality, region, postal code, and email address."
+    try:
+        checkout = store.add_to_checkout(
+            metadata=dummy_metadata,
+            product_id=product_id,
+            quantity=quantity,
+            checkout_id=checkout_id
         )
-    else:
-        summary += "All details are set. You can now complete your purchase by running 'complete_checkout'."
+        tool_context.state["checkout_id"] = checkout.id
         
-    return summary
+        # カート合計額の算出 (セント単位からドルに変換)
+        grand_total = 0.0
+        for total in checkout.totals:
+            if total.type == "total":
+                grand_total = total.amount / 100.0
+                break
+
+        summary = f"Item added successfully. Checkout ID: {checkout.id}\nCurrent Cart Summary:\n"
+        for item in checkout.line_items:
+            summary += f"- {item.item.title} (x{item.quantity}) - ${item.item.price/100:.2f} each\n"
+        summary += f"Total Amount: ${grand_total:.2f}\n"
+        
+        if not tool_context.state.get("customer_info"):
+            summary += "\nTo complete the checkout, please provide your delivery details using 'update_customer_details'."
+        return summary
+    except Exception as e:
+        return f"Error adding item to checkout: {e}"
 
 def update_customer_details(
     tool_context: ToolContext,
@@ -100,7 +98,7 @@ def update_customer_details(
     postal_code: str,
     email: str,
 ) -> str:
-    """Add delivery address and email to the checkout session.
+    """Add delivery address and email to the active checkout session.
 
     Args:
         tool_context: The tool context containing session state.
@@ -112,29 +110,52 @@ def update_customer_details(
         postal_code: The postal code.
         email: The customer's email address.
     """
-    tool_context.state["customer_info"] = {
-        "first_name": first_name,
-        "last_name": last_name,
-        "street_address": street_address,
-        "address_locality": address_locality,
-        "address_region": address_region,
-        "postal_code": postal_code,
-        "email": email,
-    }
+    checkout_id = tool_context.state.get("checkout_id")
+    if not checkout_id:
+        return "Error: No active checkout session. Please add products to your cart first."
+
+    address = PostalAddress(
+        street_address=street_address,
+        address_locality=address_locality,
+        address_region=address_region,
+        postal_code=postal_code,
+        country="US"
+    )
     
-    cart = tool_context.state.get("cart", {})
-    if not cart:
-        return "Customer information saved successfully. Please add products to your checkout next."
+    try:
+        # 配送先住所をストアに追加
+        checkout = store.add_delivery_address(checkout_id, address)
+        # バイヤー情報を設定
+        checkout.buyer = Buyer(email=email)
         
-    total = sum(PRODUCTS[pid]["price"] * qty for pid, qty in cart.items())
-    
-    res = "Customer Details Updated:\n"
-    res += f"- Name: {first_name} {last_name}\n"
-    res += f"- Shipping: {street_address}, {address_locality}, {address_region} (Zip: {postal_code})\n"
-    res += f"- Email: {email}\n\n"
-    res += f"Order Total: ${total:.2f}\n"
-    res += "Everything is ready! Please run 'complete_checkout' to finish your purchase."
-    return res
+        # 顧客情報をセッションステートに保持
+        tool_context.state["customer_info"] = {
+            "first_name": first_name,
+            "last_name": last_name,
+            "email": email
+        }
+        
+        # 送料と総支払額を算出
+        grand_total = 0.0
+        shipping_fee = 0.0
+        for total in checkout.totals:
+            if total.type == "total":
+                grand_total = total.amount / 100.0
+            elif total.type == "fulfillment":
+                shipping_fee = total.amount / 100.0
+
+        # 決済可能状態にするため、start_payment をコール
+        store.start_payment(checkout_id)
+
+        res = f"Customer details updated successfully.\n"
+        res += f"- Recipient: {first_name} {last_name}\n"
+        res += f"- Shipping Address: {street_address}, {address_locality}, {address_region} (Zip: {postal_code})\n"
+        res += f"- Shipping Fee (Standard): ${shipping_fee:.2f}\n"
+        res += f"- Grand Total: ${grand_total:.2f}\n"
+        res += "Everything is ready! Please run 'complete_checkout' to finish your purchase."
+        return res
+    except Exception as e:
+        return f"Error updating customer details: {e}"
 
 def complete_checkout(tool_context: ToolContext) -> str:
     """Process the payment and complete the checkout session.
@@ -142,29 +163,36 @@ def complete_checkout(tool_context: ToolContext) -> str:
     Args:
         tool_context: The tool context containing session state.
     """
-    cart = tool_context.state.get("cart", {})
-    cust_info = tool_context.state.get("customer_info")
-    
-    if not cart:
-        return "Cannot complete payment: Your cart is empty."
-    if not cust_info:
-        return "Cannot complete payment: Shipping details and email are required. Please provide them first."
+    checkout_id = tool_context.state.get("checkout_id")
+    if not checkout_id:
+        return "Error: No active checkout session."
         
-    order_id = f"ORD-{random.randint(10000, 99999)}"
-    total = sum(PRODUCTS[pid]["price"] * qty for pid, qty in cart.items())
-    
-    res = f"🎉 Payment Completed and Order Created successfully!\n"
-    res += f"Order ID: {order_id}\n"
-    res += f"Total Paid: ${total:.2f}\n"
-    res += f"Receipt Sent To: {cust_info['email']}\n"
-    res += f"Deliver To: {cust_info['first_name']} {cust_info['last_name']}\n"
-    res += f"Address: {cust_info['street_address']}, {cust_info['address_locality']}, {cust_info['address_region']} (Zip: {cust_info['postal_code']})\n\n"
-    res += "Thank you for shopping at the UCP Grocery Store!"
-    
-    tool_context.state["cart"] = {}
-    tool_context.state["customer_info"] = None
-    
-    return res
+    try:
+        # 注文を確定
+        checkout = store.place_order(checkout_id)
+        order_id = checkout.order.id if checkout.order else "UNKNOWN"
+        
+        grand_total = 0.0
+        for total in checkout.totals:
+            if total.type == "total":
+                grand_total = total.amount / 100.0
+                break
+
+        cust_info = tool_context.state.get("customer_info", {"first_name": "Valued", "last_name": "Customer", "email": ""})
+        
+        res = f"🎉 Order finalized successfully! (Integration Mode)\n"
+        res += f"- Order ID: {order_id}\n"
+        res += f"- Total Paid: ${grand_total:.2f}\n"
+        res += f"- Receipt Sent To: {cust_info['email']}\n"
+        res += f"- Deliver To: {cust_info['first_name']} {cust_info['last_name']}\n\n"
+        res += "Thank you for shopping at the integrated UCP Grocery Store!"
+        
+        # ステートの初期化
+        tool_context.state["checkout_id"] = None
+        tool_context.state["customer_info"] = None
+        return res
+    except Exception as e:
+        return f"Error placing order: {e}"
 
 root_agent = Agent(
     name="root_agent",
@@ -174,7 +202,7 @@ root_agent = Agent(
     ),
     instruction=(
         "You are a helpful shopping assistant for the UCP Grocery Store. "
-        "Your goal is to guide the user through their shopping journey:\n"
+        "Your goal is to guide the user through their shopping journey using the store catalog and states:\n"
         "1. Help them search for products using 'search_shopping_catalog'.\n"
         "2. Add their selected items to checkout using 'add_to_checkout'.\n"
         "3. Ask the user for their delivery details (name, address, postal code, email) and save them using 'update_customer_details'.\n"

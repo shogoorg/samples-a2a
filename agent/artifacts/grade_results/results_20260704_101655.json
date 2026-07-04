@@ -1,0 +1,1353 @@
+{
+  "eval_case_results": [
+    {
+      "eval_case_index": 0,
+      "response_candidate_results": [
+        {
+          "response_index": 0,
+          "metric_results": {
+            "custom_response_quality": {
+              "metric_name": "custom_response_quality",
+              "score": 5.0,
+              "explanation": "The response is excellent. The user asked what the assistant could do, and the assistant provided a clear, accurate, and well-structured list of its capabilities (search, add to cart, collect delivery details, complete order), directly aligning with its defined role as the UCP Grocery Store shopping assistant. The clarity is high due to the use of numbered lists and bold text, and it ends with an appropriate call to action.",
+              "rubric_verdicts": null,
+              "raw_output": null,
+              "error_message": null
+            }
+          }
+        }
+      ]
+    },
+    {
+      "eval_case_index": 1,
+      "response_candidate_results": [
+        {
+          "response_index": 0,
+          "metric_results": {
+            "custom_response_quality": {
+              "metric_name": "custom_response_quality",
+              "score": 5.0,
+              "explanation": "The agent correctly identified that the user's query was outside its defined scope (UCP Grocery Store assistant). It clearly and politely declined the request, explained its purpose, and successfully redirected the user back to relevant topics (grocery shopping assistance). This is an excellent handling of an out-of-scope query.",
+              "rubric_verdicts": null,
+              "raw_output": null,
+              "error_message": null
+            }
+          }
+        }
+      ]
+    },
+    {
+      "eval_case_index": 2,
+      "response_candidate_results": [
+        {
+          "response_index": 0,
+          "metric_results": {
+            "custom_response_quality": {
+              "metric_name": "custom_response_quality",
+              "score": 4.0,
+              "explanation": "The response accurately answers the user's question, matching the expected answer (\"The capital of France is Paris.\"). The clarity is excellent. However, the agent immediately pivots to its defined persona as a grocery shopping assistant, asking if it can help find groceries. While this aligns with the agent's instructions (as seen in the trace), it is irrelevant to the user's specific geographical query and slightly reduces the overall relevance of the response.",
+              "rubric_verdicts": null,
+              "raw_output": null,
+              "error_message": null
+            }
+          }
+        }
+      ]
+    },
+    {
+      "eval_case_index": 3,
+      "response_candidate_results": [
+        {
+          "response_index": 0,
+          "metric_results": {
+            "custom_response_quality": {
+              "metric_name": "custom_response_quality",
+              "score": 5.0,
+              "explanation": "The response is excellent. It perfectly addresses the user's open-ended question (\"what can you help me with?\") by clearly defining its role as a grocery shopping assistant for the UCP Grocery Store and listing its core capabilities in a well-structured, easy-to-read format. It accurately reflects the agent's defined functions and effectively transitions the conversation by asking the user what they want to buy, moving the interaction forward.",
+              "rubric_verdicts": null,
+              "raw_output": null,
+              "error_message": null
+            }
+          }
+        }
+      ]
+    },
+    {
+      "eval_case_index": 4,
+      "response_candidate_results": [
+        {
+          "response_index": 0,
+          "metric_results": {
+            "custom_response_quality": {
+              "metric_name": "custom_response_quality",
+              "score": 5.0,
+              "explanation": "The user asked an out-of-scope question (weather). The agent handled this perfectly by clearly stating its limitations, explaining its defined role (helpful shopping assistant for UCP Grocery Store), and pivoting back to its core function by asking how it can help with grocery shopping. The response is highly accurate regarding the agent's capabilities, relevant to its defined purpose, and exceptionally clear.",
+              "rubric_verdicts": null,
+              "raw_output": null,
+              "error_message": null
+            }
+          }
+        }
+      ]
+    },
+    {
+      "eval_case_index": 5,
+      "response_candidate_results": [
+        {
+          "response_index": 0,
+          "metric_results": {
+            "custom_response_quality": {
+              "metric_name": "custom_response_quality",
+              "score": 4.0,
+              "explanation": "The agent accurately answered the user's question, stating that the capital of France is Paris, which matches the expected answer. However, the agent then appended its persona statement and a shopping prompt (\"I am a helpful shopping assistant... Can I help you search for any groceries or items you would like to buy today?\"). This addition is irrelevant to the user's general knowledge query, slightly reducing the score for relevance and overall quality.",
+              "rubric_verdicts": null,
+              "raw_output": null,
+              "error_message": null
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "summary_metrics": [
+    {
+      "metric_name": "custom_response_quality",
+      "num_cases_total": 6,
+      "num_cases_valid": 6,
+      "num_cases_error": 0,
+      "mean_score": 4.666666666666667,
+      "stdev_score": 0.5163977794943223,
+      "pass_rate": null
+    }
+  ],
+  "win_rates": null,
+  "evaluation_dataset": [
+    {
+      "bigquery_source": null,
+      "gcs_source": null,
+      "eval_cases": [
+        {
+          "prompt": {
+            "parts": [
+              {
+                "media_resolution": null,
+                "code_execution_result": null,
+                "executable_code": null,
+                "file_data": null,
+                "function_call": null,
+                "function_response": null,
+                "inline_data": null,
+                "text": "Hello, what can you help me with?",
+                "thought": null,
+                "thought_signature": null,
+                "video_metadata": null,
+                "tool_call": null,
+                "tool_response": null,
+                "part_metadata": null
+              }
+            ],
+            "role": "user"
+          },
+          "responses": [
+            {
+              "response": {
+                "parts": [
+                  {
+                    "media_resolution": null,
+                    "code_execution_result": null,
+                    "executable_code": null,
+                    "file_data": null,
+                    "function_call": null,
+                    "function_response": null,
+                    "inline_data": null,
+                    "text": "Hello! I am your shopping assistant for the UCP Grocery Store. I can help you with your grocery shopping in a few ways:\n\n1.  **Search for products:** Tell me what you are looking for (e.g., \"cookies,\" \"organic milk,\" \"fresh strawberries\"), and I will search our catalog.\n2.  **Add items to your cart:** Once you find what you like, I can add it to your checkout.\n3.  **Collect delivery details:** I can gather your name, address, and email for delivery.\n4.  **Complete your order:** Once everything is ready, I can finalize your purchase.\n\nHow can I help you start shopping today?",
+                    "thought": null,
+                    "thought_signature": null,
+                    "video_metadata": null,
+                    "tool_call": null,
+                    "tool_response": null,
+                    "part_metadata": null
+                  }
+                ],
+                "role": "model"
+              }
+            }
+          ],
+          "reference": null,
+          "system_instruction": null,
+          "conversation_history": null,
+          "rubric_groups": null,
+          "eval_case_id": "greeting",
+          "intermediate_events": null,
+          "agent_info": null,
+          "agent_data": {
+            "agents": {
+              "root_agent": {
+                "agent_id": "root_agent",
+                "agent_type": "LlmAgent",
+                "description": "",
+                "instruction": "You are a helpful shopping assistant for the UCP Grocery Store. Your goal is to guide the user through their shopping journey:\n1. Help them search for products using 'search_shopping_catalog'.\n2. Add their selected items to checkout using 'add_to_checkout'.\n3. Ask the user for their delivery details (name, address, postal code, email) and save them using 'update_customer_details'.\n4. Finalize the order using 'complete_checkout' once details are filled.",
+                "tools": [
+                  {
+                    "retrieval": null,
+                    "computer_use": null,
+                    "file_search": null,
+                    "google_search": null,
+                    "google_maps": null,
+                    "code_execution": null,
+                    "enterprise_web_search": null,
+                    "function_declarations": [
+                      {
+                        "description": "Search the product catalog for products that match the given query.\n\nArgs:\n    query: The search term (e.g. cookies, strawberries, chips).",
+                        "name": "search_shopping_catalog",
+                        "parameters": {
+                          "additional_properties": null,
+                          "defs": null,
+                          "ref": null,
+                          "any_of": null,
+                          "default": null,
+                          "description": null,
+                          "enum": null,
+                          "example": null,
+                          "format": null,
+                          "items": null,
+                          "max_items": null,
+                          "max_length": null,
+                          "max_properties": null,
+                          "maximum": null,
+                          "min_items": null,
+                          "min_length": null,
+                          "min_properties": null,
+                          "minimum": null,
+                          "nullable": null,
+                          "pattern": null,
+                          "properties": {
+                            "query": {
+                              "additional_properties": null,
+                              "defs": null,
+                              "ref": null,
+                              "any_of": null,
+                              "default": null,
+                              "description": null,
+                              "enum": null,
+                              "example": null,
+                              "format": null,
+                              "items": null,
+                              "max_items": null,
+                              "max_length": null,
+                              "max_properties": null,
+                              "maximum": null,
+                              "min_items": null,
+                              "min_length": null,
+                              "min_properties": null,
+                              "minimum": null,
+                              "nullable": null,
+                              "pattern": null,
+                              "properties": null,
+                              "property_ordering": null,
+                              "required": null,
+                              "title": null,
+                              "type": "STRING"
+                            }
+                          },
+                          "property_ordering": null,
+                          "required": [
+                            "query"
+                          ],
+                          "title": null,
+                          "type": "OBJECT"
+                        },
+                        "parameters_json_schema": null,
+                        "response": null,
+                        "response_json_schema": null,
+                        "behavior": null
+                      }
+                    ],
+                    "google_search_retrieval": null,
+                    "parallel_ai_search": null,
+                    "url_context": null,
+                    "mcp_servers": null
+                  }
+                ],
+                "sub_agents": []
+              }
+            },
+            "turns": [
+              {
+                "turn_index": 0,
+                "turn_id": "turn_0",
+                "events": [
+                  {
+                    "author": "root_agent",
+                    "content": {
+                      "parts": [
+                        {
+                          "media_resolution": null,
+                          "code_execution_result": null,
+                          "executable_code": null,
+                          "file_data": null,
+                          "function_call": null,
+                          "function_response": null,
+                          "inline_data": null,
+                          "text": "Hello! I am your shopping assistant for the UCP Grocery Store. I can help you with your grocery shopping in a few ways:\n\n1.  **Search for products:** Tell me what you are looking for (e.g., \"cookies,\" \"organic milk,\" \"fresh strawberries\"), and I will search our catalog.\n2.  **Add items to your cart:** Once you find what you like, I can add it to your checkout.\n3.  **Collect delivery details:** I can gather your name, address, and email for delivery.\n4.  **Complete your order:** Once everything is ready, I can finalize your purchase.\n\nHow can I help you start shopping today?",
+                          "thought": null,
+                          "thought_signature": null,
+                          "video_metadata": null,
+                          "tool_call": null,
+                          "tool_response": null,
+                          "part_metadata": null
+                        }
+                      ],
+                      "role": "model"
+                    },
+                    "event_time": null,
+                    "state_delta": null,
+                    "active_tools": null
+                  }
+                ]
+              }
+            ]
+          },
+          "user_scenario": null
+        },
+        {
+          "prompt": {
+            "parts": [
+              {
+                "media_resolution": null,
+                "code_execution_result": null,
+                "executable_code": null,
+                "file_data": null,
+                "function_call": null,
+                "function_response": null,
+                "inline_data": null,
+                "text": "What's the weather like in San Francisco?",
+                "thought": null,
+                "thought_signature": null,
+                "video_metadata": null,
+                "tool_call": null,
+                "tool_response": null,
+                "part_metadata": null
+              }
+            ],
+            "role": "user"
+          },
+          "responses": [
+            {
+              "response": {
+                "parts": [
+                  {
+                    "media_resolution": null,
+                    "code_execution_result": null,
+                    "executable_code": null,
+                    "file_data": null,
+                    "function_call": null,
+                    "function_response": null,
+                    "inline_data": null,
+                    "text": "I can't check the weather in San Francisco. I'm a helpful shopping assistant for the UCP Grocery Store, and I can help you with finding products, adding them to your cart, or checking out. Is there anything I can help you with regarding your grocery shopping?",
+                    "thought": null,
+                    "thought_signature": null,
+                    "video_metadata": null,
+                    "tool_call": null,
+                    "tool_response": null,
+                    "part_metadata": null
+                  }
+                ],
+                "role": "model"
+              }
+            }
+          ],
+          "reference": null,
+          "system_instruction": null,
+          "conversation_history": null,
+          "rubric_groups": null,
+          "eval_case_id": "weather_query",
+          "intermediate_events": null,
+          "agent_info": null,
+          "agent_data": {
+            "agents": {
+              "root_agent": {
+                "agent_id": "root_agent",
+                "agent_type": "LlmAgent",
+                "description": "",
+                "instruction": "You are a helpful shopping assistant for the UCP Grocery Store. Your goal is to guide the user through their shopping journey:\n1. Help them search for products using 'search_shopping_catalog'.\n2. Add their selected items to checkout using 'add_to_checkout'.\n3. Ask the user for their delivery details (name, address, postal code, email) and save them using 'update_customer_details'.\n4. Finalize the order using 'complete_checkout' once details are filled.",
+                "tools": [
+                  {
+                    "retrieval": null,
+                    "computer_use": null,
+                    "file_search": null,
+                    "google_search": null,
+                    "google_maps": null,
+                    "code_execution": null,
+                    "enterprise_web_search": null,
+                    "function_declarations": [
+                      {
+                        "description": "Search the product catalog for products that match the given query.\n\nArgs:\n    query: The search term (e.g. cookies, strawberries, chips).",
+                        "name": "search_shopping_catalog",
+                        "parameters": {
+                          "additional_properties": null,
+                          "defs": null,
+                          "ref": null,
+                          "any_of": null,
+                          "default": null,
+                          "description": null,
+                          "enum": null,
+                          "example": null,
+                          "format": null,
+                          "items": null,
+                          "max_items": null,
+                          "max_length": null,
+                          "max_properties": null,
+                          "maximum": null,
+                          "min_items": null,
+                          "min_length": null,
+                          "min_properties": null,
+                          "minimum": null,
+                          "nullable": null,
+                          "pattern": null,
+                          "properties": {
+                            "query": {
+                              "additional_properties": null,
+                              "defs": null,
+                              "ref": null,
+                              "any_of": null,
+                              "default": null,
+                              "description": null,
+                              "enum": null,
+                              "example": null,
+                              "format": null,
+                              "items": null,
+                              "max_items": null,
+                              "max_length": null,
+                              "max_properties": null,
+                              "maximum": null,
+                              "min_items": null,
+                              "min_length": null,
+                              "min_properties": null,
+                              "minimum": null,
+                              "nullable": null,
+                              "pattern": null,
+                              "properties": null,
+                              "property_ordering": null,
+                              "required": null,
+                              "title": null,
+                              "type": "STRING"
+                            }
+                          },
+                          "property_ordering": null,
+                          "required": [
+                            "query"
+                          ],
+                          "title": null,
+                          "type": "OBJECT"
+                        },
+                        "parameters_json_schema": null,
+                        "response": null,
+                        "response_json_schema": null,
+                        "behavior": null
+                      }
+                    ],
+                    "google_search_retrieval": null,
+                    "parallel_ai_search": null,
+                    "url_context": null,
+                    "mcp_servers": null
+                  }
+                ],
+                "sub_agents": []
+              }
+            },
+            "turns": [
+              {
+                "turn_index": 0,
+                "turn_id": "turn_0",
+                "events": [
+                  {
+                    "author": "root_agent",
+                    "content": {
+                      "parts": [
+                        {
+                          "media_resolution": null,
+                          "code_execution_result": null,
+                          "executable_code": null,
+                          "file_data": null,
+                          "function_call": null,
+                          "function_response": null,
+                          "inline_data": null,
+                          "text": "I can't check the weather in San Francisco. I'm a helpful shopping assistant for the UCP Grocery Store, and I can help you with finding products, adding them to your cart, or checking out. Is there anything I can help you with regarding your grocery shopping?",
+                          "thought": null,
+                          "thought_signature": null,
+                          "video_metadata": null,
+                          "tool_call": null,
+                          "tool_response": null,
+                          "part_metadata": null
+                        }
+                      ],
+                      "role": "model"
+                    },
+                    "event_time": null,
+                    "state_delta": null,
+                    "active_tools": null
+                  }
+                ]
+              }
+            ]
+          },
+          "user_scenario": null
+        },
+        {
+          "prompt": {
+            "parts": [
+              {
+                "media_resolution": null,
+                "code_execution_result": null,
+                "executable_code": null,
+                "file_data": null,
+                "function_call": null,
+                "function_response": null,
+                "inline_data": null,
+                "text": "What is the capital of France?",
+                "thought": null,
+                "thought_signature": null,
+                "video_metadata": null,
+                "tool_call": null,
+                "tool_response": null,
+                "part_metadata": null
+              }
+            ],
+            "role": "user"
+          },
+          "responses": [
+            {
+              "response": {
+                "parts": [
+                  {
+                    "media_resolution": null,
+                    "code_execution_result": null,
+                    "executable_code": null,
+                    "file_data": null,
+                    "function_call": null,
+                    "function_response": null,
+                    "inline_data": null,
+                    "text": "The capital of France is Paris.\n\nCan I help you find any groceries today? You can search for products like \"milk,\" \"cookies,\" or \"strawberries.\"",
+                    "thought": null,
+                    "thought_signature": null,
+                    "video_metadata": null,
+                    "tool_call": null,
+                    "tool_response": null,
+                    "part_metadata": null
+                  }
+                ],
+                "role": "model"
+              }
+            }
+          ],
+          "reference": {
+            "response": {
+              "parts": [
+                {
+                  "media_resolution": null,
+                  "code_execution_result": null,
+                  "executable_code": null,
+                  "file_data": null,
+                  "function_call": null,
+                  "function_response": null,
+                  "inline_data": null,
+                  "text": "The capital of France is Paris.",
+                  "thought": null,
+                  "thought_signature": null,
+                  "video_metadata": null,
+                  "tool_call": null,
+                  "tool_response": null,
+                  "part_metadata": null
+                }
+              ],
+              "role": "model"
+            }
+          },
+          "system_instruction": null,
+          "conversation_history": null,
+          "rubric_groups": null,
+          "eval_case_id": "capital_lookup",
+          "intermediate_events": null,
+          "agent_info": null,
+          "agent_data": {
+            "agents": {
+              "root_agent": {
+                "agent_id": "root_agent",
+                "agent_type": "LlmAgent",
+                "description": "",
+                "instruction": "You are a helpful shopping assistant for the UCP Grocery Store. Your goal is to guide the user through their shopping journey:\n1. Help them search for products using 'search_shopping_catalog'.\n2. Add their selected items to checkout using 'add_to_checkout'.\n3. Ask the user for their delivery details (name, address, postal code, email) and save them using 'update_customer_details'.\n4. Finalize the order using 'complete_checkout' once details are filled.",
+                "tools": [
+                  {
+                    "retrieval": null,
+                    "computer_use": null,
+                    "file_search": null,
+                    "google_search": null,
+                    "google_maps": null,
+                    "code_execution": null,
+                    "enterprise_web_search": null,
+                    "function_declarations": [
+                      {
+                        "description": "Search the product catalog for products that match the given query.\n\nArgs:\n    query: The search term (e.g. cookies, strawberries, chips).",
+                        "name": "search_shopping_catalog",
+                        "parameters": {
+                          "additional_properties": null,
+                          "defs": null,
+                          "ref": null,
+                          "any_of": null,
+                          "default": null,
+                          "description": null,
+                          "enum": null,
+                          "example": null,
+                          "format": null,
+                          "items": null,
+                          "max_items": null,
+                          "max_length": null,
+                          "max_properties": null,
+                          "maximum": null,
+                          "min_items": null,
+                          "min_length": null,
+                          "min_properties": null,
+                          "minimum": null,
+                          "nullable": null,
+                          "pattern": null,
+                          "properties": {
+                            "query": {
+                              "additional_properties": null,
+                              "defs": null,
+                              "ref": null,
+                              "any_of": null,
+                              "default": null,
+                              "description": null,
+                              "enum": null,
+                              "example": null,
+                              "format": null,
+                              "items": null,
+                              "max_items": null,
+                              "max_length": null,
+                              "max_properties": null,
+                              "maximum": null,
+                              "min_items": null,
+                              "min_length": null,
+                              "min_properties": null,
+                              "minimum": null,
+                              "nullable": null,
+                              "pattern": null,
+                              "properties": null,
+                              "property_ordering": null,
+                              "required": null,
+                              "title": null,
+                              "type": "STRING"
+                            }
+                          },
+                          "property_ordering": null,
+                          "required": [
+                            "query"
+                          ],
+                          "title": null,
+                          "type": "OBJECT"
+                        },
+                        "parameters_json_schema": null,
+                        "response": null,
+                        "response_json_schema": null,
+                        "behavior": null
+                      }
+                    ],
+                    "google_search_retrieval": null,
+                    "parallel_ai_search": null,
+                    "url_context": null,
+                    "mcp_servers": null
+                  }
+                ],
+                "sub_agents": []
+              }
+            },
+            "turns": [
+              {
+                "turn_index": 0,
+                "turn_id": "turn_0",
+                "events": [
+                  {
+                    "author": "root_agent",
+                    "content": {
+                      "parts": [
+                        {
+                          "media_resolution": null,
+                          "code_execution_result": null,
+                          "executable_code": null,
+                          "file_data": null,
+                          "function_call": null,
+                          "function_response": null,
+                          "inline_data": null,
+                          "text": "The capital of France is Paris.\n\nCan I help you find any groceries today? You can search for products like \"milk,\" \"cookies,\" or \"strawberries.\"",
+                          "thought": null,
+                          "thought_signature": null,
+                          "video_metadata": null,
+                          "tool_call": null,
+                          "tool_response": null,
+                          "part_metadata": null
+                        }
+                      ],
+                      "role": "model"
+                    },
+                    "event_time": null,
+                    "state_delta": null,
+                    "active_tools": null
+                  }
+                ]
+              }
+            ]
+          },
+          "user_scenario": null
+        },
+        {
+          "prompt": {
+            "parts": [
+              {
+                "media_resolution": null,
+                "code_execution_result": null,
+                "executable_code": null,
+                "file_data": null,
+                "function_call": null,
+                "function_response": null,
+                "inline_data": null,
+                "text": "Hello, what can you help me with?",
+                "thought": null,
+                "thought_signature": null,
+                "video_metadata": null,
+                "tool_call": null,
+                "tool_response": null,
+                "part_metadata": null
+              }
+            ],
+            "role": "user"
+          },
+          "responses": [
+            {
+              "response": {
+                "parts": [
+                  {
+                    "media_resolution": null,
+                    "code_execution_result": null,
+                    "executable_code": null,
+                    "file_data": null,
+                    "function_call": null,
+                    "function_response": null,
+                    "inline_data": null,
+                    "text": "Hello! I'm here to help you with your grocery shopping at the UCP Grocery Store.\n\nI can help you with:\n\n1.  **Finding products** (e.g., \"Do you have strawberries?\" or \"Search for cookies\").\n2.  **Adding items to your cart** (once we find them).\n3.  **Taking your delivery details** (name, address, and email) when you're ready to check out.\n4.  **Finalizing your order**.\n\nWhat are you looking to buy today?",
+                    "thought": null,
+                    "thought_signature": null,
+                    "video_metadata": null,
+                    "tool_call": null,
+                    "tool_response": null,
+                    "part_metadata": null
+                  }
+                ],
+                "role": "model"
+              }
+            }
+          ],
+          "reference": null,
+          "system_instruction": null,
+          "conversation_history": null,
+          "rubric_groups": null,
+          "eval_case_id": "greeting",
+          "intermediate_events": null,
+          "agent_info": null,
+          "agent_data": {
+            "agents": {
+              "root_agent": {
+                "agent_id": "root_agent",
+                "agent_type": "LlmAgent",
+                "description": "",
+                "instruction": "You are a helpful shopping assistant for the UCP Grocery Store. Your goal is to guide the user through their shopping journey using the store catalog and states:\n1. Help them search for products using 'search_shopping_catalog'.\n2. Add their selected items to checkout using 'add_to_checkout'.\n3. Ask the user for their delivery details (name, address, postal code, email) and save them using 'update_customer_details'.\n4. Finalize the order using 'complete_checkout' once details are filled.",
+                "tools": [
+                  {
+                    "retrieval": null,
+                    "computer_use": null,
+                    "file_search": null,
+                    "google_search": null,
+                    "google_maps": null,
+                    "code_execution": null,
+                    "enterprise_web_search": null,
+                    "function_declarations": [
+                      {
+                        "description": "Search the product catalog for products that match the given query.\n\nArgs:\n    query: The search term (e.g. cookies, strawberries, chips).",
+                        "name": "search_shopping_catalog",
+                        "parameters": {
+                          "additional_properties": null,
+                          "defs": null,
+                          "ref": null,
+                          "any_of": null,
+                          "default": null,
+                          "description": null,
+                          "enum": null,
+                          "example": null,
+                          "format": null,
+                          "items": null,
+                          "max_items": null,
+                          "max_length": null,
+                          "max_properties": null,
+                          "maximum": null,
+                          "min_items": null,
+                          "min_length": null,
+                          "min_properties": null,
+                          "minimum": null,
+                          "nullable": null,
+                          "pattern": null,
+                          "properties": {
+                            "query": {
+                              "additional_properties": null,
+                              "defs": null,
+                              "ref": null,
+                              "any_of": null,
+                              "default": null,
+                              "description": null,
+                              "enum": null,
+                              "example": null,
+                              "format": null,
+                              "items": null,
+                              "max_items": null,
+                              "max_length": null,
+                              "max_properties": null,
+                              "maximum": null,
+                              "min_items": null,
+                              "min_length": null,
+                              "min_properties": null,
+                              "minimum": null,
+                              "nullable": null,
+                              "pattern": null,
+                              "properties": null,
+                              "property_ordering": null,
+                              "required": null,
+                              "title": null,
+                              "type": "STRING"
+                            }
+                          },
+                          "property_ordering": null,
+                          "required": [
+                            "query"
+                          ],
+                          "title": null,
+                          "type": "OBJECT"
+                        },
+                        "parameters_json_schema": null,
+                        "response": null,
+                        "response_json_schema": null,
+                        "behavior": null
+                      }
+                    ],
+                    "google_search_retrieval": null,
+                    "parallel_ai_search": null,
+                    "url_context": null,
+                    "mcp_servers": null
+                  }
+                ],
+                "sub_agents": []
+              }
+            },
+            "turns": [
+              {
+                "turn_index": 0,
+                "turn_id": "turn_0",
+                "events": [
+                  {
+                    "author": "root_agent",
+                    "content": {
+                      "parts": [
+                        {
+                          "media_resolution": null,
+                          "code_execution_result": null,
+                          "executable_code": null,
+                          "file_data": null,
+                          "function_call": null,
+                          "function_response": null,
+                          "inline_data": null,
+                          "text": "Hello! I'm here to help you with your grocery shopping at the UCP Grocery Store.\n\nI can help you with:\n\n1.  **Finding products** (e.g., \"Do you have strawberries?\" or \"Search for cookies\").\n2.  **Adding items to your cart** (once we find them).\n3.  **Taking your delivery details** (name, address, and email) when you're ready to check out.\n4.  **Finalizing your order**.\n\nWhat are you looking to buy today?",
+                          "thought": null,
+                          "thought_signature": null,
+                          "video_metadata": null,
+                          "tool_call": null,
+                          "tool_response": null,
+                          "part_metadata": null
+                        }
+                      ],
+                      "role": "model"
+                    },
+                    "event_time": null,
+                    "state_delta": null,
+                    "active_tools": null
+                  }
+                ]
+              }
+            ]
+          },
+          "user_scenario": null
+        },
+        {
+          "prompt": {
+            "parts": [
+              {
+                "media_resolution": null,
+                "code_execution_result": null,
+                "executable_code": null,
+                "file_data": null,
+                "function_call": null,
+                "function_response": null,
+                "inline_data": null,
+                "text": "What's the weather like in San Francisco?",
+                "thought": null,
+                "thought_signature": null,
+                "video_metadata": null,
+                "tool_call": null,
+                "tool_response": null,
+                "part_metadata": null
+              }
+            ],
+            "role": "user"
+          },
+          "responses": [
+            {
+              "response": {
+                "parts": [
+                  {
+                    "media_resolution": null,
+                    "code_execution_result": null,
+                    "executable_code": null,
+                    "file_data": null,
+                    "function_call": null,
+                    "function_response": null,
+                    "inline_data": null,
+                    "text": "I'm sorry, I cannot provide weather information. I am a helpful shopping assistant for the UCP Grocery Store, and my tools are focused on searching for products, adding them to a cart, and completing a checkout process.\n\nHow can I help you with your grocery shopping today?",
+                    "thought": null,
+                    "thought_signature": null,
+                    "video_metadata": null,
+                    "tool_call": null,
+                    "tool_response": null,
+                    "part_metadata": null
+                  }
+                ],
+                "role": "model"
+              }
+            }
+          ],
+          "reference": null,
+          "system_instruction": null,
+          "conversation_history": null,
+          "rubric_groups": null,
+          "eval_case_id": "weather_query",
+          "intermediate_events": null,
+          "agent_info": null,
+          "agent_data": {
+            "agents": {
+              "root_agent": {
+                "agent_id": "root_agent",
+                "agent_type": "LlmAgent",
+                "description": "",
+                "instruction": "You are a helpful shopping assistant for the UCP Grocery Store. Your goal is to guide the user through their shopping journey using the store catalog and states:\n1. Help them search for products using 'search_shopping_catalog'.\n2. Add their selected items to checkout using 'add_to_checkout'.\n3. Ask the user for their delivery details (name, address, postal code, email) and save them using 'update_customer_details'.\n4. Finalize the order using 'complete_checkout' once details are filled.",
+                "tools": [
+                  {
+                    "retrieval": null,
+                    "computer_use": null,
+                    "file_search": null,
+                    "google_search": null,
+                    "google_maps": null,
+                    "code_execution": null,
+                    "enterprise_web_search": null,
+                    "function_declarations": [
+                      {
+                        "description": "Search the product catalog for products that match the given query.\n\nArgs:\n    query: The search term (e.g. cookies, strawberries, chips).",
+                        "name": "search_shopping_catalog",
+                        "parameters": {
+                          "additional_properties": null,
+                          "defs": null,
+                          "ref": null,
+                          "any_of": null,
+                          "default": null,
+                          "description": null,
+                          "enum": null,
+                          "example": null,
+                          "format": null,
+                          "items": null,
+                          "max_items": null,
+                          "max_length": null,
+                          "max_properties": null,
+                          "maximum": null,
+                          "min_items": null,
+                          "min_length": null,
+                          "min_properties": null,
+                          "minimum": null,
+                          "nullable": null,
+                          "pattern": null,
+                          "properties": {
+                            "query": {
+                              "additional_properties": null,
+                              "defs": null,
+                              "ref": null,
+                              "any_of": null,
+                              "default": null,
+                              "description": null,
+                              "enum": null,
+                              "example": null,
+                              "format": null,
+                              "items": null,
+                              "max_items": null,
+                              "max_length": null,
+                              "max_properties": null,
+                              "maximum": null,
+                              "min_items": null,
+                              "min_length": null,
+                              "min_properties": null,
+                              "minimum": null,
+                              "nullable": null,
+                              "pattern": null,
+                              "properties": null,
+                              "property_ordering": null,
+                              "required": null,
+                              "title": null,
+                              "type": "STRING"
+                            }
+                          },
+                          "property_ordering": null,
+                          "required": [
+                            "query"
+                          ],
+                          "title": null,
+                          "type": "OBJECT"
+                        },
+                        "parameters_json_schema": null,
+                        "response": null,
+                        "response_json_schema": null,
+                        "behavior": null
+                      }
+                    ],
+                    "google_search_retrieval": null,
+                    "parallel_ai_search": null,
+                    "url_context": null,
+                    "mcp_servers": null
+                  }
+                ],
+                "sub_agents": []
+              }
+            },
+            "turns": [
+              {
+                "turn_index": 0,
+                "turn_id": "turn_0",
+                "events": [
+                  {
+                    "author": "root_agent",
+                    "content": {
+                      "parts": [
+                        {
+                          "media_resolution": null,
+                          "code_execution_result": null,
+                          "executable_code": null,
+                          "file_data": null,
+                          "function_call": null,
+                          "function_response": null,
+                          "inline_data": null,
+                          "text": "I'm sorry, I cannot provide weather information. I am a helpful shopping assistant for the UCP Grocery Store, and my tools are focused on searching for products, adding them to a cart, and completing a checkout process.\n\nHow can I help you with your grocery shopping today?",
+                          "thought": null,
+                          "thought_signature": null,
+                          "video_metadata": null,
+                          "tool_call": null,
+                          "tool_response": null,
+                          "part_metadata": null
+                        }
+                      ],
+                      "role": "model"
+                    },
+                    "event_time": null,
+                    "state_delta": null,
+                    "active_tools": null
+                  }
+                ]
+              }
+            ]
+          },
+          "user_scenario": null
+        },
+        {
+          "prompt": {
+            "parts": [
+              {
+                "media_resolution": null,
+                "code_execution_result": null,
+                "executable_code": null,
+                "file_data": null,
+                "function_call": null,
+                "function_response": null,
+                "inline_data": null,
+                "text": "What is the capital of France?",
+                "thought": null,
+                "thought_signature": null,
+                "video_metadata": null,
+                "tool_call": null,
+                "tool_response": null,
+                "part_metadata": null
+              }
+            ],
+            "role": "user"
+          },
+          "responses": [
+            {
+              "response": {
+                "parts": [
+                  {
+                    "media_resolution": null,
+                    "code_execution_result": null,
+                    "executable_code": null,
+                    "file_data": null,
+                    "function_call": null,
+                    "function_response": null,
+                    "inline_data": null,
+                    "text": "The capital of France is Paris.\n\nI am a helpful shopping assistant for the UCP Grocery Store. Can I help you search for any groceries or items you would like to buy today?",
+                    "thought": null,
+                    "thought_signature": null,
+                    "video_metadata": null,
+                    "tool_call": null,
+                    "tool_response": null,
+                    "part_metadata": null
+                  }
+                ],
+                "role": "model"
+              }
+            }
+          ],
+          "reference": {
+            "response": {
+              "parts": [
+                {
+                  "media_resolution": null,
+                  "code_execution_result": null,
+                  "executable_code": null,
+                  "file_data": null,
+                  "function_call": null,
+                  "function_response": null,
+                  "inline_data": null,
+                  "text": "The capital of France is Paris.",
+                  "thought": null,
+                  "thought_signature": null,
+                  "video_metadata": null,
+                  "tool_call": null,
+                  "tool_response": null,
+                  "part_metadata": null
+                }
+              ],
+              "role": "model"
+            }
+          },
+          "system_instruction": null,
+          "conversation_history": null,
+          "rubric_groups": null,
+          "eval_case_id": "capital_lookup",
+          "intermediate_events": null,
+          "agent_info": null,
+          "agent_data": {
+            "agents": {
+              "root_agent": {
+                "agent_id": "root_agent",
+                "agent_type": "LlmAgent",
+                "description": "",
+                "instruction": "You are a helpful shopping assistant for the UCP Grocery Store. Your goal is to guide the user through their shopping journey using the store catalog and states:\n1. Help them search for products using 'search_shopping_catalog'.\n2. Add their selected items to checkout using 'add_to_checkout'.\n3. Ask the user for their delivery details (name, address, postal code, email) and save them using 'update_customer_details'.\n4. Finalize the order using 'complete_checkout' once details are filled.",
+                "tools": [
+                  {
+                    "retrieval": null,
+                    "computer_use": null,
+                    "file_search": null,
+                    "google_search": null,
+                    "google_maps": null,
+                    "code_execution": null,
+                    "enterprise_web_search": null,
+                    "function_declarations": [
+                      {
+                        "description": "Search the product catalog for products that match the given query.\n\nArgs:\n    query: The search term (e.g. cookies, strawberries, chips).",
+                        "name": "search_shopping_catalog",
+                        "parameters": {
+                          "additional_properties": null,
+                          "defs": null,
+                          "ref": null,
+                          "any_of": null,
+                          "default": null,
+                          "description": null,
+                          "enum": null,
+                          "example": null,
+                          "format": null,
+                          "items": null,
+                          "max_items": null,
+                          "max_length": null,
+                          "max_properties": null,
+                          "maximum": null,
+                          "min_items": null,
+                          "min_length": null,
+                          "min_properties": null,
+                          "minimum": null,
+                          "nullable": null,
+                          "pattern": null,
+                          "properties": {
+                            "query": {
+                              "additional_properties": null,
+                              "defs": null,
+                              "ref": null,
+                              "any_of": null,
+                              "default": null,
+                              "description": null,
+                              "enum": null,
+                              "example": null,
+                              "format": null,
+                              "items": null,
+                              "max_items": null,
+                              "max_length": null,
+                              "max_properties": null,
+                              "maximum": null,
+                              "min_items": null,
+                              "min_length": null,
+                              "min_properties": null,
+                              "minimum": null,
+                              "nullable": null,
+                              "pattern": null,
+                              "properties": null,
+                              "property_ordering": null,
+                              "required": null,
+                              "title": null,
+                              "type": "STRING"
+                            }
+                          },
+                          "property_ordering": null,
+                          "required": [
+                            "query"
+                          ],
+                          "title": null,
+                          "type": "OBJECT"
+                        },
+                        "parameters_json_schema": null,
+                        "response": null,
+                        "response_json_schema": null,
+                        "behavior": null
+                      }
+                    ],
+                    "google_search_retrieval": null,
+                    "parallel_ai_search": null,
+                    "url_context": null,
+                    "mcp_servers": null
+                  }
+                ],
+                "sub_agents": []
+              }
+            },
+            "turns": [
+              {
+                "turn_index": 0,
+                "turn_id": "turn_0",
+                "events": [
+                  {
+                    "author": "root_agent",
+                    "content": {
+                      "parts": [
+                        {
+                          "media_resolution": null,
+                          "code_execution_result": null,
+                          "executable_code": null,
+                          "file_data": null,
+                          "function_call": null,
+                          "function_response": null,
+                          "inline_data": null,
+                          "text": "The capital of France is Paris.\n\nI am a helpful shopping assistant for the UCP Grocery Store. Can I help you search for any groceries or items you would like to buy today?",
+                          "thought": null,
+                          "thought_signature": null,
+                          "video_metadata": null,
+                          "tool_call": null,
+                          "tool_response": null,
+                          "part_metadata": null
+                        }
+                      ],
+                      "role": "model"
+                    },
+                    "event_time": null,
+                    "state_delta": null,
+                    "active_tools": null
+                  }
+                ]
+              }
+            ]
+          },
+          "user_scenario": null
+        }
+      ],
+      "eval_dataset_df": null,
+      "candidate_name": null
+    }
+  ],
+  "metadata": {
+    "candidate_names": [
+      "candidate_1"
+    ],
+    "dataset_name": null,
+    "dataset_id": null,
+    "creation_timestamp": "2026-07-04T01:16:55.053688Z",
+    "dataset": [
+      {
+        "prompt_display_text": "Hello, what can you help me with?",
+        "prompt_raw_json": "{\n  \"parts\": [\n    {\n      \"text\": \"Hello, what can you help me with?\"\n    }\n  ],\n  \"role\": \"user\"\n}",
+        "reference": "",
+        "reference_raw_json": "",
+        "response_display_text": "Hello! I am your shopping assistant for the UCP Grocery Store. I can help you with your grocery shopping in a few ways:\n\n1.  **Search for products:** Tell me what you are looking for (e.g., \"cookies,\" \"organic milk,\" \"fresh strawberries\"), and I will search our catalog.\n2.  **Add items to your cart:** Once you find what you like, I can add it to your checkout.\n3.  **Collect delivery details:** I can gather your name, address, and email for delivery.\n4.  **Complete your order:** Once everything is ready, I can finalize your purchase.\n\nHow can I help you start shopping today?",
+        "response_raw_json": "{\n  \"parts\": [\n    {\n      \"text\": \"Hello! I am your shopping assistant for the UCP Grocery Store. I can help you with your grocery shopping in a few ways:\\n\\n1.  **Search for products:** Tell me what you are looking for (e.g., \\\"cookies,\\\" \\\"organic milk,\\\" \\\"fresh strawberries\\\"), and I will search our catalog.\\n2.  **Add items to your cart:** Once you find what you like, I can add it to your checkout.\\n3.  **Collect delivery details:** I can gather your name, address, and email for delivery.\\n4.  **Complete your order:** Once everything is ready, I can finalize your purchase.\\n\\nHow can I help you start shopping today?\"\n    }\n  ],\n  \"role\": \"model\"\n}",
+        "intermediate_events": null,
+        "agent_data": "{\"agents\": {\"root_agent\": {\"agent_id\": \"root_agent\", \"agent_type\": \"LlmAgent\", \"description\": \"\", \"instruction\": \"You are a helpful shopping assistant for the UCP Grocery Store. Your goal is to guide the user through their shopping journey:\\n1. Help them search for products using 'search_shopping_catalog'.\\n2. Add their selected items to checkout using 'add_to_checkout'.\\n3. Ask the user for their delivery details (name, address, postal code, email) and save them using 'update_customer_details'.\\n4. Finalize the order using 'complete_checkout' once details are filled.\", \"tools\": [{\"function_declarations\": [{\"description\": \"Search the product catalog for products that match the given query.\\n\\nArgs:\\n    query: The search term (e.g. cookies, strawberries, chips).\", \"name\": \"search_shopping_catalog\", \"parameters\": {\"properties\": {\"query\": {\"type\": \"STRING\"}}, \"required\": [\"query\"], \"type\": \"OBJECT\"}}]}], \"sub_agents\": []}}, \"turns\": [{\"turn_index\": 0, \"turn_id\": \"turn_0\", \"events\": [{\"author\": \"root_agent\", \"content\": {\"parts\": [{\"text\": \"Hello! I am your shopping assistant for the UCP Grocery Store. I can help you with your grocery shopping in a few ways:\\n\\n1.  **Search for products:** Tell me what you are looking for (e.g., \\\"cookies,\\\" \\\"organic milk,\\\" \\\"fresh strawberries\\\"), and I will search our catalog.\\n2.  **Add items to your cart:** Once you find what you like, I can add it to your checkout.\\n3.  **Collect delivery details:** I can gather your name, address, and email for delivery.\\n4.  **Complete your order:** Once everything is ready, I can finalize your purchase.\\n\\nHow can I help you start shopping today?\"}], \"role\": \"model\"}}]}]}"
+      },
+      {
+        "prompt_display_text": "What's the weather like in San Francisco?",
+        "prompt_raw_json": "{\n  \"parts\": [\n    {\n      \"text\": \"What's the weather like in San Francisco?\"\n    }\n  ],\n  \"role\": \"user\"\n}",
+        "reference": "",
+        "reference_raw_json": "",
+        "response_display_text": "I can't check the weather in San Francisco. I'm a helpful shopping assistant for the UCP Grocery Store, and I can help you with finding products, adding them to your cart, or checking out. Is there anything I can help you with regarding your grocery shopping?",
+        "response_raw_json": "{\n  \"parts\": [\n    {\n      \"text\": \"I can't check the weather in San Francisco. I'm a helpful shopping assistant for the UCP Grocery Store, and I can help you with finding products, adding them to your cart, or checking out. Is there anything I can help you with regarding your grocery shopping?\"\n    }\n  ],\n  \"role\": \"model\"\n}",
+        "intermediate_events": null,
+        "agent_data": "{\"agents\": {\"root_agent\": {\"agent_id\": \"root_agent\", \"agent_type\": \"LlmAgent\", \"description\": \"\", \"instruction\": \"You are a helpful shopping assistant for the UCP Grocery Store. Your goal is to guide the user through their shopping journey:\\n1. Help them search for products using 'search_shopping_catalog'.\\n2. Add their selected items to checkout using 'add_to_checkout'.\\n3. Ask the user for their delivery details (name, address, postal code, email) and save them using 'update_customer_details'.\\n4. Finalize the order using 'complete_checkout' once details are filled.\", \"tools\": [{\"function_declarations\": [{\"description\": \"Search the product catalog for products that match the given query.\\n\\nArgs:\\n    query: The search term (e.g. cookies, strawberries, chips).\", \"name\": \"search_shopping_catalog\", \"parameters\": {\"properties\": {\"query\": {\"type\": \"STRING\"}}, \"required\": [\"query\"], \"type\": \"OBJECT\"}}]}], \"sub_agents\": []}}, \"turns\": [{\"turn_index\": 0, \"turn_id\": \"turn_0\", \"events\": [{\"author\": \"root_agent\", \"content\": {\"parts\": [{\"text\": \"I can't check the weather in San Francisco. I'm a helpful shopping assistant for the UCP Grocery Store, and I can help you with finding products, adding them to your cart, or checking out. Is there anything I can help you with regarding your grocery shopping?\"}], \"role\": \"model\"}}]}]}"
+      },
+      {
+        "prompt_display_text": "What is the capital of France?",
+        "prompt_raw_json": "{\n  \"parts\": [\n    {\n      \"text\": \"What is the capital of France?\"\n    }\n  ],\n  \"role\": \"user\"\n}",
+        "reference": "The capital of France is Paris.",
+        "reference_raw_json": "{\n  \"parts\": [\n    {\n      \"text\": \"The capital of France is Paris.\"\n    }\n  ],\n  \"role\": \"model\"\n}",
+        "response_display_text": "The capital of France is Paris.\n\nCan I help you find any groceries today? You can search for products like \"milk,\" \"cookies,\" or \"strawberries.\"",
+        "response_raw_json": "{\n  \"parts\": [\n    {\n      \"text\": \"The capital of France is Paris.\\n\\nCan I help you find any groceries today? You can search for products like \\\"milk,\\\" \\\"cookies,\\\" or \\\"strawberries.\\\"\"\n    }\n  ],\n  \"role\": \"model\"\n}",
+        "intermediate_events": null,
+        "agent_data": "{\"agents\": {\"root_agent\": {\"agent_id\": \"root_agent\", \"agent_type\": \"LlmAgent\", \"description\": \"\", \"instruction\": \"You are a helpful shopping assistant for the UCP Grocery Store. Your goal is to guide the user through their shopping journey:\\n1. Help them search for products using 'search_shopping_catalog'.\\n2. Add their selected items to checkout using 'add_to_checkout'.\\n3. Ask the user for their delivery details (name, address, postal code, email) and save them using 'update_customer_details'.\\n4. Finalize the order using 'complete_checkout' once details are filled.\", \"tools\": [{\"function_declarations\": [{\"description\": \"Search the product catalog for products that match the given query.\\n\\nArgs:\\n    query: The search term (e.g. cookies, strawberries, chips).\", \"name\": \"search_shopping_catalog\", \"parameters\": {\"properties\": {\"query\": {\"type\": \"STRING\"}}, \"required\": [\"query\"], \"type\": \"OBJECT\"}}]}], \"sub_agents\": []}}, \"turns\": [{\"turn_index\": 0, \"turn_id\": \"turn_0\", \"events\": [{\"author\": \"root_agent\", \"content\": {\"parts\": [{\"text\": \"The capital of France is Paris.\\n\\nCan I help you find any groceries today? You can search for products like \\\"milk,\\\" \\\"cookies,\\\" or \\\"strawberries.\\\"\"}], \"role\": \"model\"}}]}]}"
+      },
+      {
+        "prompt_display_text": "Hello, what can you help me with?",
+        "prompt_raw_json": "{\n  \"parts\": [\n    {\n      \"text\": \"Hello, what can you help me with?\"\n    }\n  ],\n  \"role\": \"user\"\n}",
+        "reference": "",
+        "reference_raw_json": "",
+        "response_display_text": "Hello! I'm here to help you with your grocery shopping at the UCP Grocery Store.\n\nI can help you with:\n\n1.  **Finding products** (e.g., \"Do you have strawberries?\" or \"Search for cookies\").\n2.  **Adding items to your cart** (once we find them).\n3.  **Taking your delivery details** (name, address, and email) when you're ready to check out.\n4.  **Finalizing your order**.\n\nWhat are you looking to buy today?",
+        "response_raw_json": "{\n  \"parts\": [\n    {\n      \"text\": \"Hello! I'm here to help you with your grocery shopping at the UCP Grocery Store.\\n\\nI can help you with:\\n\\n1.  **Finding products** (e.g., \\\"Do you have strawberries?\\\" or \\\"Search for cookies\\\").\\n2.  **Adding items to your cart** (once we find them).\\n3.  **Taking your delivery details** (name, address, and email) when you're ready to check out.\\n4.  **Finalizing your order**.\\n\\nWhat are you looking to buy today?\"\n    }\n  ],\n  \"role\": \"model\"\n}",
+        "intermediate_events": null,
+        "agent_data": "{\"agents\": {\"root_agent\": {\"agent_id\": \"root_agent\", \"agent_type\": \"LlmAgent\", \"description\": \"\", \"instruction\": \"You are a helpful shopping assistant for the UCP Grocery Store. Your goal is to guide the user through their shopping journey using the store catalog and states:\\n1. Help them search for products using 'search_shopping_catalog'.\\n2. Add their selected items to checkout using 'add_to_checkout'.\\n3. Ask the user for their delivery details (name, address, postal code, email) and save them using 'update_customer_details'.\\n4. Finalize the order using 'complete_checkout' once details are filled.\", \"tools\": [{\"function_declarations\": [{\"description\": \"Search the product catalog for products that match the given query.\\n\\nArgs:\\n    query: The search term (e.g. cookies, strawberries, chips).\", \"name\": \"search_shopping_catalog\", \"parameters\": {\"properties\": {\"query\": {\"type\": \"STRING\"}}, \"required\": [\"query\"], \"type\": \"OBJECT\"}}]}], \"sub_agents\": []}}, \"turns\": [{\"turn_index\": 0, \"turn_id\": \"turn_0\", \"events\": [{\"author\": \"root_agent\", \"content\": {\"parts\": [{\"text\": \"Hello! I'm here to help you with your grocery shopping at the UCP Grocery Store.\\n\\nI can help you with:\\n\\n1.  **Finding products** (e.g., \\\"Do you have strawberries?\\\" or \\\"Search for cookies\\\").\\n2.  **Adding items to your cart** (once we find them).\\n3.  **Taking your delivery details** (name, address, and email) when you're ready to check out.\\n4.  **Finalizing your order**.\\n\\nWhat are you looking to buy today?\"}], \"role\": \"model\"}}]}]}"
+      },
+      {
+        "prompt_display_text": "What's the weather like in San Francisco?",
+        "prompt_raw_json": "{\n  \"parts\": [\n    {\n      \"text\": \"What's the weather like in San Francisco?\"\n    }\n  ],\n  \"role\": \"user\"\n}",
+        "reference": "",
+        "reference_raw_json": "",
+        "response_display_text": "I'm sorry, I cannot provide weather information. I am a helpful shopping assistant for the UCP Grocery Store, and my tools are focused on searching for products, adding them to a cart, and completing a checkout process.\n\nHow can I help you with your grocery shopping today?",
+        "response_raw_json": "{\n  \"parts\": [\n    {\n      \"text\": \"I'm sorry, I cannot provide weather information. I am a helpful shopping assistant for the UCP Grocery Store, and my tools are focused on searching for products, adding them to a cart, and completing a checkout process.\\n\\nHow can I help you with your grocery shopping today?\"\n    }\n  ],\n  \"role\": \"model\"\n}",
+        "intermediate_events": null,
+        "agent_data": "{\"agents\": {\"root_agent\": {\"agent_id\": \"root_agent\", \"agent_type\": \"LlmAgent\", \"description\": \"\", \"instruction\": \"You are a helpful shopping assistant for the UCP Grocery Store. Your goal is to guide the user through their shopping journey using the store catalog and states:\\n1. Help them search for products using 'search_shopping_catalog'.\\n2. Add their selected items to checkout using 'add_to_checkout'.\\n3. Ask the user for their delivery details (name, address, postal code, email) and save them using 'update_customer_details'.\\n4. Finalize the order using 'complete_checkout' once details are filled.\", \"tools\": [{\"function_declarations\": [{\"description\": \"Search the product catalog for products that match the given query.\\n\\nArgs:\\n    query: The search term (e.g. cookies, strawberries, chips).\", \"name\": \"search_shopping_catalog\", \"parameters\": {\"properties\": {\"query\": {\"type\": \"STRING\"}}, \"required\": [\"query\"], \"type\": \"OBJECT\"}}]}], \"sub_agents\": []}}, \"turns\": [{\"turn_index\": 0, \"turn_id\": \"turn_0\", \"events\": [{\"author\": \"root_agent\", \"content\": {\"parts\": [{\"text\": \"I'm sorry, I cannot provide weather information. I am a helpful shopping assistant for the UCP Grocery Store, and my tools are focused on searching for products, adding them to a cart, and completing a checkout process.\\n\\nHow can I help you with your grocery shopping today?\"}], \"role\": \"model\"}}]}]}"
+      },
+      {
+        "prompt_display_text": "What is the capital of France?",
+        "prompt_raw_json": "{\n  \"parts\": [\n    {\n      \"text\": \"What is the capital of France?\"\n    }\n  ],\n  \"role\": \"user\"\n}",
+        "reference": "The capital of France is Paris.",
+        "reference_raw_json": "{\n  \"parts\": [\n    {\n      \"text\": \"The capital of France is Paris.\"\n    }\n  ],\n  \"role\": \"model\"\n}",
+        "response_display_text": "The capital of France is Paris.\n\nI am a helpful shopping assistant for the UCP Grocery Store. Can I help you search for any groceries or items you would like to buy today?",
+        "response_raw_json": "{\n  \"parts\": [\n    {\n      \"text\": \"The capital of France is Paris.\\n\\nI am a helpful shopping assistant for the UCP Grocery Store. Can I help you search for any groceries or items you would like to buy today?\"\n    }\n  ],\n  \"role\": \"model\"\n}",
+        "intermediate_events": null,
+        "agent_data": "{\"agents\": {\"root_agent\": {\"agent_id\": \"root_agent\", \"agent_type\": \"LlmAgent\", \"description\": \"\", \"instruction\": \"You are a helpful shopping assistant for the UCP Grocery Store. Your goal is to guide the user through their shopping journey using the store catalog and states:\\n1. Help them search for products using 'search_shopping_catalog'.\\n2. Add their selected items to checkout using 'add_to_checkout'.\\n3. Ask the user for their delivery details (name, address, postal code, email) and save them using 'update_customer_details'.\\n4. Finalize the order using 'complete_checkout' once details are filled.\", \"tools\": [{\"function_declarations\": [{\"description\": \"Search the product catalog for products that match the given query.\\n\\nArgs:\\n    query: The search term (e.g. cookies, strawberries, chips).\", \"name\": \"search_shopping_catalog\", \"parameters\": {\"properties\": {\"query\": {\"type\": \"STRING\"}}, \"required\": [\"query\"], \"type\": \"OBJECT\"}}]}], \"sub_agents\": []}}, \"turns\": [{\"turn_index\": 0, \"turn_id\": \"turn_0\", \"events\": [{\"author\": \"root_agent\", \"content\": {\"parts\": [{\"text\": \"The capital of France is Paris.\\n\\nI am a helpful shopping assistant for the UCP Grocery Store. Can I help you search for any groceries or items you would like to buy today?\"}], \"role\": \"model\"}}]}]}"
+      }
+    ]
+  },
+  "agent_info": null
+}
