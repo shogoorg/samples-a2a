@@ -24,6 +24,31 @@ agent/
 
 > 💡 **Tip:** Use [Antigravity CLI](https://antigravity.google/) for AI-assisted development — project context is pre-configured in `GEMINI.md`.
 
+## Architecture Overview
+
+```mermaid
+graph TD
+    subgraph Client_Side ["1. Dev Client"]
+        User["User"] <-->|"Interaction"| Playground["Playground / Dev UI"]
+    end
+
+    subgraph New_Agent_Integrated ["2. New Agent (Integrated)"]
+        Playground <-->|"Message"| NewAgent["New ADK Agent (agent/app/)"]
+        NewAgent <-->|"Decision & Planning"| GeminiNew["Vertex AI (Gemini)"]
+        NewAgent <-->|"Integrated State Management"| Store[("store.py")]
+    end
+```
+
+### Component Descriptions
+
+1. **New ADK Agent (agent/app/)**
+   - **Overview**: An independent ADK project configured as the main server.
+   - **Role**: Serves as the active server integrating the business logic (`store.py` and product catalog) from the legacy merchant agent.
+
+2. **Playground / Dev UI**
+   - **Overview**: An interactive local development UI provided by `agents-cli`.
+   - **Role**: Serves as the user interface to interact with and test the ADK Agent locally.
+
 ## Requirements
 
 Before you begin, ensure you have:
