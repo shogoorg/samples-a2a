@@ -1,0 +1,11 @@
+staging_project_id = "shogoorg-samples-a2a"
+prod_project_id = "shogoorg-samples-a2a"
+cicd_runner_project_id = "shogoorg-samples-a2a"
+region = "us-east1"
+repository_name = "samples-a2a"
+repository_owner = "shogoorg"
+host_connection_name = "git-samples-a2a"
+create_cb_connection = true
+create_repository = false
+github_app_installation_id = "144263351"
+github_pat_secret_id = "git-samples-a2a-github-oauthtoken-b7164e"

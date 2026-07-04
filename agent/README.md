@@ -138,3 +138,9 @@ Built-in telemetry automatically exports data to Cloud Trace, BigQuery, and Clou
 
 This agent supports the [A2A Protocol](https://a2a-protocol.org/). Use the [A2A Inspector](https://github.com/a2aproject/a2a-inspector) to test interoperability.
 See the [A2A Inspector docs](https://github.com/a2aproject/a2a-inspector) for details.
+
+## Changelog
+
+### 2026-07-04
+- Updated CI/CD runner configuration in `agents-cli-manifest.yaml` to `google_cloud_build`.
+- Excluded dynamic runtime artifacts (`agent/app/data/checkouts_db.json`, `agent/artifacts/`) from Git via `.gitignore`.

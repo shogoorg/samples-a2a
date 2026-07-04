@@ -207,3 +207,7 @@ tools/a2a-inspector/
 *.pem
 *-key.json
 credentials*.json
+
+# Test and Run Data
+app/data/checkouts_db.json
+artifacts/
