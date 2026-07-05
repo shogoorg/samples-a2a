@@ -1,4 +1,4 @@
-# Cymbal Retail エージェント (UCP 拡張 & A2A 対応)
+# samples-a2a
 
 このプロジェクトは、`agents-cli` を使用して UCP 拡張および A2A（Agent-to-Agent）に対応した Cymbal Retail エージェントを実行するためのものです。
 
