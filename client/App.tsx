@@ -322,8 +322,18 @@ function App() {
 
       const combinedBotMessage = createChatMessage(Sender.MODEL, "");
 
-      const responseParts =
-        data.result?.parts || data.result?.status?.message?.parts || [];
+      let responseParts: any[] = [];
+      if (data.result?.parts) {
+        responseParts = data.result.parts;
+      } else if (data.result?.status?.message?.parts) {
+        responseParts = data.result.status.message.parts;
+      } else if (data.result?.history) {
+        for (const msg of data.result.history) {
+          if (msg.role === "agent" || msg.role === "model") {
+            responseParts.push(...(msg.parts || []));
+          }
+        }
+      }
 
       for (const part of responseParts) {
         if (part.text) {

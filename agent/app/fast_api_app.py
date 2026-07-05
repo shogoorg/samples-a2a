@@ -76,6 +76,13 @@ app: FastAPI = get_fast_api_app(
 app.title = "agent"
 app.description = "API for interacting with the Agent agent"
 
+from fastapi.staticfiles import StaticFiles
+app.mount(
+    "/images",
+    StaticFiles(directory=os.path.join(AGENT_DIR, "app", "data", "images")),
+    name="images",
+)
+
 
 @app.post("/feedback")
 def collect_feedback(feedback: Feedback) -> dict[str, str]:
@@ -95,4 +102,4 @@ def collect_feedback(feedback: Feedback) -> dict[str, str]:
 if __name__ == "__main__":
     import uvicorn
 
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=10999)
