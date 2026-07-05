@@ -1,171 +1,139 @@
-# Cymbal Retail Agent with UCP Extension and A2A
+# Cymbal Retail エージェント (UCP 拡張 & A2A 対応)
 
-This Project enables running the Cymbal Retail Agent with UCP Extension and A2A using agents-cli.
+このプロジェクトは、`agents-cli` を使用して UCP 拡張および A2A（Agent-to-Agent）に対応した Cymbal Retail エージェントを実行するためのものです。
 
-agents-cli <https://github.com/Universal-Commerce-Protocol/samples/tree/main/rest/python/server> is a CLI and skill for building agents on the Gemini Enterprise Agent Platform.
+`agents-cli` は、Gemini Enterprise Agent Platform 上でエージェントを構築するための CLI およびスキルです。詳細な仕様は [Universal-Commerce-Protocol/samples](https://github.com/Universal-Commerce-Protocol/samples/tree/main/rest/python/server) を参照してください。
 
-The Cymbal Retail Agent with UCP Extension and A2A <https://github.com/Universal-Commerce-Protocol/samples/tree/main/a2a> demonstrates how to build an AI-powered shopping assistant using Universal Commerce Protocol (UCP) - an open standard that enables interoperability between commerce platforms, merchants, and payment providers.
+UCP（Universal Commerce Protocol）は、コマースプラットフォーム、加盟店、決済プロバイダー間の相互運用性を可能にするオープンスタンダードです。このエージェントは、UCP 規格およびその A2A 実装を参照して、AI 搭載 of ショッピングアシスタントを構築するデモを示しています。詳細は [Cymbal Retail Agent with UCP Extension and A2A](https://github.com/Universal-Commerce-Protocol/samples/tree/main/a2a) を参照してください。
 
-## Project Structure
+免責事項:このリポジトリは、Cymbal Retail Agent with UCP Extension and A2A のクローンおよび再利用バージョンであり、インタラクティブなショッピング フローとエージェント検証をサポートするためにリファクタリングされていますagents-cli
+
+
+## プロジェクト構成
 
 ```
 agent/
-├── app/                       # Core ADK agent code
-│   ├── agent.py               # Main agent logic (customized Grocery Store assistant)
-│   ├── fast_api_app.py        # FastAPI backend server
-│   ├── store.py               # Integrated Retail Store state management
-│   ├── payment_processor.py   # Payment processor logic
-│   ├── app_utils/             # App utilities and helpers
-│   └── data/                  # Store data (products.json, ucp.json)
-├── tests/                     # Unit, integration, and load tests
-├── GEMINI.md                  # AI-assisted development guide
-└── pyproject.toml             # Project dependencies
+├── app/                       # エージェントのコアコード (ADK)
+│   ├── agent.py               # メインのエージェントロジック (買い物アシスタント)
+│   ├── fast_api_app.py        # FastAPI バックエンドサーバー
+│   ├── store.py               # 統合された小売店ステート管理 (Mock DB)
+│   ├── payment_processor.py   # 決済プロセッサーロジック
+│   ├── app_utils/             # アプリのユーティリティとヘルパー
+│   └── data/                  # 小売店の静的データ (products.json, ucp.json)
+├── tests/                     # ユニットテスト、統合テスト、負荷テスト
+├── GEMINI.md                  # AI 支援開発ガイド
+└── pyproject.toml             # プロジェクトの依存関係定義
 ```
 
-> 💡 **Tip:** Use [Antigravity CLI](https://antigravity.google/) for AI-assisted development — project context is pre-configured in `GEMINI.md`.
+> 💡 **Tip:** AI 支援開発には [Antigravity CLI](https://antigravity.google/) を使用してください。プロジェクトのコンテキストは `GEMINI.md` に事前設定されています。
 
-## Architecture Overview
+## アーキテクチャ概要
 
 ```mermaid
 graph TD
-    subgraph Client_Side ["1. Dev Client"]
-        User["User"] <-->|"Interaction"| Playground["Playground / Dev UI"]
+    subgraph Client_Side ["1. 開発クライアント"]
+        User["ユーザー"] <-->|"対話"| Playground["Playground / 開発 UI"]
     end
 
-    subgraph New_Agent_Integrated ["2. New Agent (Integrated)"]
-        Playground <-->|"Message"| NewAgent["New ADK Agent (agent/app/)"]
-        NewAgent <-->|"Decision & Planning"| GeminiNew["Vertex AI (Gemini)"]
-        NewAgent <-->|"Integrated State Management"| Store[("store.py")]
+    subgraph New_Agent_Integrated ["2. 新エージェント (統合環境)"]
+        Playground <-->|"メッセージ"| NewAgent["新規 ADK エージェント (agent/app/)"]
+        NewAgent <-->|"意思決定と計画"| GeminiNew["Vertex AI (Gemini)"]
+        NewAgent <-->|"統合ステート管理"| Store[("store.py")]
     end
 ```
 
-### Component Descriptions
+### コンポーネントの説明
 
-1. **New ADK Agent (agent/app/)**
-   - **Overview**: An independent ADK project configured as the main server.
-   - **Role**: Serves as the active server integrating the business logic (`store.py` and product catalog) from the legacy merchant agent.
+1. **新規 ADK エージェント (agent/app/)**
+   - **概要**: メインサーバーとして構成された独立した ADK プロジェクト。
+   - **役割**: 従来の加盟店エージェントから移植されたビジネスロジック（`store.py` および商品カタログ）を統合して動作するアクティブなサーバー。
 
-2. **Playground / Dev UI**
-   - **Overview**: An interactive local development UI provided by `agents-cli`.
-   - **Role**: Serves as the user interface to interact with and test the ADK Agent locally.
+2. **Playground / 開発 UI**
+   - **概要**: `agents-cli` が提供する対話型のローカル開発 UI。
+   - **役割**: ローカル環境で ADK エージェントの動作テストや対話を行うためのユーザーインターフェース。
 
-## Requirements
+## 事前準備
 
-Before you begin, ensure you have:
-- **uv**: Python package manager (used for all dependency management in this project) — [Install](https://docs.astral.sh/uv/getting-started/installation/) ([add packages](https://docs.astral.sh/uv/concepts/dependencies/) with `uv add <package>`)
-- **agents-cli**: Agents CLI — Install with `uv tool install google-agents-cli`
-- **Google Cloud SDK**: For GCP services — [Install](https://cloud.google.com/sdk/docs/install)
+開始する前に、以下がインストールされていることを確認してください。
+- **uv**: Python パッケージマネージャー (このプロジェクトのすべての依存関係管理に使用) — [インストール方法](https://docs.astral.sh/uv/getting-started/installation/)
+- **agents-cli**: エージェント CLI — `uv tool install google-agents-cli` でインストール
+- **Google Cloud SDK**: GCP サービス用 — [インストール方法](https://cloud.google.com/sdk/docs/install)
 
-## Quick Start
+## クイックスタート
 
-This agent simulates a full customer shopping checkout flow referencing the **UCP (Universal Commerce Protocol)** and its A2A implementation.
+このエージェントは、UCP 規格および A2A 実装を参照し、顧客のショッピングからチェックアウト、決済完了までのフロー全体をシミュレートします。
 
-Install `agents-cli` and its skills if not already installed:
+`agents-cli` および関連スキルをセットアップします（未実行の場合のみ）：
 
 ```bash
 uvx google-agents-cli setup
 ```
 
-Install required packages:
+必要な依存パッケージをインストールします：
 
 ```bash
 agents-cli install
 ```
 
-Start the interactive development playground:
+対話型のローカル開発用プレイグラウンドを起動します：
 
 ```bash
 agents-cli playground
 ```
 
-Or test the agent directly from your terminal using commands to run through the entire shopping flow:
-
-```bash
-# 1. Search products (calls 'search_shopping_catalog')
-agents-cli run "Show me cookies in stock"
-
-# 2. Add product to checkout (calls 'add_to_checkout')
-agents-cli run "Add BISC-001 to my checkout"
-
-# 3. Register shipping address and details (calls 'update_customer_details')
-agents-cli run "Set my shipping info: name is John Doe, address is 1600 Amphitheatre Pkwy, Mountain View, CA, postal code is 94043, email is john.doe@example.com"
-
-# 4. Finalize payment and place order (calls 'complete_checkout')
-agents-cli run "Complete my checkout now"
-```
-
-Example commands in Japanese (to run the entire shopping flow using Japanese prompts):
+または、ターミナルから直接コマンドを実行して、ショッピングフロー全体をテストすることも可能です：
 
 ```bash
 # 1. 商品の検索テスト
 agents-cli run "在庫があるクッキーを見せてください"
 
-# 2. カート追加テスト
-agents-cli run "私のチェックアウトに BISC-001 を追加してください"
+# 2. カート追加テスト (BISC-001を追加)
+# ※直前のコマンドが出力した --session-id を付与してセッションを維持してください
+agents-cli run "私のチェックアウトに BISC-001 を追加してください" --session-id <SESSION_ID>
 
 # 3. 配送先情報の登録テスト
-agents-cli run "私の配送情報を設定してください：名前は John Doe、住所は 1600 Amphitheatre Pkwy, Mountain View, CA、郵便番号は 94043、メールアドレスは john.doe@example.com です"
+agents-cli run "私の配送情報を設定してください：名前は John Doe、住所は 1600 Amphitheatre Pkwy, Mountain View, CA、郵便番号は 94043、メールアドレスは john.doe@example.com です" --session-id <SESSION_ID>
 
 # 4. 決済完了テスト
-agents-cli run "今すぐ私のチェックアウトを完了してください"
+agents-cli run "今すぐ私のチェックアウトを完了してください" --session-id <SESSION_ID>
 ```
 
-### Cloud Run Deployment
-If deploying the merchant server on Google Cloud:
-- **Server URL**: `https://<YOUR_UCP_SERVER_URL>`
-- **Discovery URL**: `https://<YOUR_UCP_SERVER_URL>/.well-known/ucp`
+## 使用可能なコマンド
 
-## Commands
-
-| Command | Description |
+| コマンド | 説明 |
 | :--- | :--- |
-| `agents-cli install` | Install agent dependencies using uv |
-| `agents-cli playground` | Launch local development playground |
-| `agents-cli lint` | Run code quality checks |
-| `agents-cli eval` | Evaluate agent behavior (generate, grade, analyze, and more — see `agents-cli eval --help`) |
-| `uv run pytest tests/unit tests/integration` | Run unit and integration tests |
+| `agents-cli install` | uv を使用してエージェントの依存パッケージをインストールします。 |
+| `agents-cli playground` | ローカル開発用プレイグラウンド（Web UI）を起動します。 |
+| `agents-cli lint` | コードの品質チェック（静的解析）を実行します。 |
+| `agents-cli eval run --dataset <path>` | 指定したデータセットを使用してエージェントの動作を評価します。 |
+| `uv run pytest tests/unit tests/integration` | ユニットテストおよび統合テストを実行します。 |
 
-## 🛠️ Project Management
+## 🛠️ プロジェクト管理
 
-| Command | What It Does |
+| コマンド | 説明 |
 | :--- | :--- |
-| `agents-cli scaffold enhance` | Add CI/CD pipelines and Terraform infrastructure |
-| `agents-cli infra cicd` | Set up the entire CI/CD pipeline and infrastructure with a single command |
-| `agents-cli scaffold upgrade` | Automatically upgrade to the latest version while preserving customizations |
+| `agents-cli scaffold enhance` | CI/CD パイプラインと Terraform インフラ定義を追加します。 |
+| `agents-cli infra cicd` | CI/CD パイプラインとインフラ全体をワンコマンドでセットアップします。 |
+| `agents-cli scaffold upgrade` | カスタマイズ内容を維持したまま、自動的に最新バージョンにアップグレードします。 |
 
 ---
 
-## Development
+## 開発
 
-Edit your agent logic in `agent/app/agent.py` and test it with `agents-cli playground` — it automatically reloads on save.
+エージェントのロジックは `agent/app/agent.py` で編集します。`agents-cli playground` を起動している場合、ファイルを保存すると自動的にリロードされます。
 
-## Deployment
+## デプロイ
 
-Deploy the ADK Agent to Cloud Run and expose it publicly:
+ADK エージェントを Cloud Run にデプロイし、一般公開します：
 
 ```bash
-# 1. Deploy the agent
 agents-cli deploy --project=<YOUR_PROJECT_ID> --no-confirm-project
-
-# 2. Expose the service to allow public access
-gcloud run services add-iam-policy-binding samples-a2a \
-  --member="allUsers" \
-  --role="roles/run.invoker" \
-  --region=us-east1 \
-  --project=<YOUR_PROJECT_ID>
 ```
 
-## Observability
+## オブザーバビリティ (観測性)
 
-Built-in telemetry automatically exports data to Cloud Trace, BigQuery, and Cloud Logging.
+組み込みのテレメトリー機能により、Cloud Trace、BigQuery、および Cloud Logging へデータが自動的にエクスポートされます。
 
-## A2A Inspector
+## A2A インスペクター
 
-This agent supports the [A2A Protocol](https://a2a-protocol.org/). Use the [A2A Inspector](https://github.com/a2aproject/a2a-inspector) to test interoperability.
-See the [A2A Inspector docs](https://github.com/a2aproject/a2a-inspector) for details.
-
-## Changelog
-
-### 2026-07-04
-- Updated CI/CD runner configuration in `agents-cli-manifest.yaml` to `google_cloud_build`.
-- Excluded dynamic runtime artifacts (`agent/app/data/checkouts_db.json`, `agent/artifacts/`) from Git via `.gitignore`.
+このエージェントは [A2A プロトコル](https://a2a-protocol.org/) をサポートしています。相互運用性のテストには [A2A Inspector](https://github.com/a2aproject/a2a-inspector) を使用してください。詳細は [A2A Inspector のドキュメント](https://github.com/a2aproject/a2a-inspector) を参照してください。
