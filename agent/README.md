@@ -35,7 +35,7 @@ agent/
 graph TD
     User["ユーザー / CLI / A2Aクライアント"] -->|自然言語インテント / JSON-RPC| FastAPI["FastAPI Server - fast_api_app.py -"]
     
-    subgraph Single_Process_Space [単一プロセスメモリ空間 (Unified Host)]
+    subgraph Single_Process_Space ["単一プロセスメモリ空間 - Unified Host -"]
         FastAPI -->|コンテキスト転送 / A2Aルーティング| ADK["ADK 2.0 Runtime - agent.py -"]
         ADK -->|Root Agent / Shopper Agent| LLM["gemini-flash-latest"]
         
