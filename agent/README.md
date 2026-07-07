@@ -185,6 +185,11 @@ class A2AExtensionBase(ABC):
 
 ## クイックスタート
 
+エージェントプロジェクトのディレクトリに移動します：
+```bash
+cd agent
+```
+
 ### 1. 依存関係のインストール
 `agents-cli` および関連スキルをセットアップします（未実行の場合のみ）：
 ```bash
@@ -193,45 +198,55 @@ uvx google-agents-cli setup
 
 プロジェクト全体の依存関係をインストールします：
 ```bash
-uv sync
+agents-cli install
 ```
 
-### 2. ローカルサーバーの起動
+### 2. ローカルサーバーの起動 (A2A Server)
+他エージェントとのA2A通信エンドポイントをホストするローカルサーバーを起動します：
 ```bash
 uv run uvicorn app.fast_api_app:app --reload --port 8000
 ```
 
-### 3. CLIおよびAPIからのテスト（対話実行）
-agents-cli run を使用してインメモリのエージェントと対話するか、他のエージェントからの JSON-RPC A2A リクエストをシミュレートしてテストします。
-
-#### CLIからの実行テスト（多言語および状態維持の確認）
-セッションIDを指定して実行することで、一連のショッピングフローを多言語を跨いでテストできます。
-
+### 3. Web UIでの対話テスト (Playground)
+**別のターミナルを開き**（`cd agent` でディレクトリ移動後）、`agents-cli` 標準のプレイグラウンドUIを起動してブラウザ上でチャットテストを行います：
 ```bash
-# 1. 商品の検索とカート追加（英語）
-agents-cli run --prompt "Find a blue shirt and add it to my cart" --session-id "test-session-001"
+agents-cli playground
+```
+起動後、ブラウザで表示されるURL（通常は `http://localhost:3000` など）にアクセスして対話します。
 
-# 2. 配送先情報の登録（日本語）
-agents-cli run --prompt "私の配送情報を設定してください：名前は John Doe、住所は 1600 Amphitheatre Pkwy, Mountain View, CA、郵便番号は 94043、メールアドレスは john.doe@example.com です" --session-id "test-session-001"
+### 4. CLIからの対話テスト (CLI Test)
+**別のターミナルで**、セッションIDを指定して実行することで、一連のショッピングフロー（検索 ➔ カート追加 ➔ 配送先登録 ➔ 決済完了）を対話テストできます。
 
-# 3. 決済完了テスト（日本語）
-agents-cli run --prompt "さっきのカートの商品をチェックアウトして決済を完了させてください" --session-id "test-session-001"
+#### 日本語セッションでの実行例
+```bash
+# 1. 商品の検索テスト（初回はセッションIDの指定は不要です）
+agents-cli run "在庫があるクッキーを見せてください"
+
+# 2. カート追加テスト (BISC-001を追加)
+# ※直前のコマンドが出力したセッションIDを指定して実行してください
+agents-cli run "私のチェックアウトに BISC-001 を追加してください" --session-id <SESSION_ID>
+
+# 3. 配送先情報の登録テスト
+agents-cli run "私の配送情報を設定してください：名前は John Doe、住所は 1600 Amphitheatre Pkwy, Mountain View, CA、郵便番号は 94043、メールアドレスは john.doe@example.com です" --session-id <SESSION_ID>
+
+# 4. 決済完了テスト
+agents-cli run "今すぐ私のチェックアウトを完了してください" --session-id <SESSION_ID>
 ```
 
-#### A2A通信（JSON-RPC 2.0）のローカル疎通テスト
-FastAPIサーバーが起動した状態で、別のエージェントから送信されるA2Aメッセージを模したリクエストを送信します。
+#### 英語セッションでの実行例（別のセッションとして実行）
 ```bash
-curl -X POST http://localhost:8000/a2a/app \
-  -H "Content-Type: application/json" \
-  -d '{
-    "jsonrpc": "2.0",
-    "method": "execute",
-    "params": {
-      "prompt": "Find a blue shirt and add it to my cart",
-      "session_id": "a2a-session-001"
-    },
-    "id": 1
-  }'
+# 1. 商品の検索テスト（初回はセッションIDの指定は不要です）
+agents-cli run "Show me cookies in stock"
+
+# 2. カート追加テスト (BISC-001を追加)
+# ※直前のコマンドが出力したセッションIDを指定して実行してください
+agents-cli run "Add BISC-001 to my checkout" --session-id <SESSION_ID>
+
+# 3. 配送先情報の登録テスト
+agents-cli run "Set my shipping info: name is John Doe, address is 1600 Amphitheatre Pkwy, Mountain View, CA, postal code is 94043, email is john.doe@example.com" --session-id <SESSION_ID>
+
+# 4. 決済完了テスト
+agents-cli run "Complete my checkout now" --session-id <SESSION_ID>
 ```
 
 ## デプロイ (Deployment)
@@ -244,32 +259,31 @@ curl -X POST http://localhost:8000/a2a/app \
 agents-cli scaffold enhance --deployment-target cloud_run
 ```
 
-### 2. CI/CDとインフラ全体の自動セットアップ
-`agents-cli infra cicd` を使用し、パイプラインとインフラ全体をワンコマンドでセットアップします。
-```bash
-agents-cli infra cicd
-```
-
-### 3. デプロイの実行
+### 2. デプロイの実行
 gcloudのプロジェクト設定を確認し、デプロイを実行します。
 ```bash
 # 1. Google Cloud プロジェクトを設定
 gcloud config set project <YOUR_GCP_PROJECT_ID>
 
 # 2. デプロイの実行
-agents-cli deploy
+agents-cli deploy --no-confirm-project
 
 # 3. エージェントサービスを一般公開 (必要な場合のみ)
 # ※ インターネット経由で呼び出すために必要です
-gcloud run services add-iam-policy-binding samples-a2a \
+gcloud run services add-iam-policy-binding agent \
   --member="allUsers" \
   --role="roles/run.invoker" \
-  --region=us-central1 \
+  --region=us-east1 \
   --project=<YOUR_GCP_PROJECT_ID>
 ```
 
 実行が完了すると、本番環境に対応した一般公開可能かつスケール可能なサービスURLが出力されます。
-このURLの `/a2a/app` エンドポイント（例: `https://<YOUR_CLOUD_RUN_URL>/a2a/app`）が、他のエージェントと接続するための **A2A外部エンドポイント** として機能します。
+このサービスURLに対して、以下のエンドポイントが公開されます：
+
+* **A2A外部エンドポイント (JSON-RPC 2.0)**:
+  `https://<YOUR_CLOUD_RUN_URL>/a2a/app` （他のエージェントからのリクエストを受信するエンドポイント）
+* **A2Aエージェントカード (メタデータ定義)**:
+  `https://<YOUR_CLOUD_RUN_URL>/a2a/app/.well-known/agent-card.json` （エージェントの機能や対応言語などを記述したDiscovery用JSONファイル）
 
 > ⚠️ **一般公開に関するセキュリティ警告:**
 > `allUsers` への公開は、インターネット上の誰でもエージェントを呼び出せるようになるため、Gemini API等の予期せぬ課金が発生するリスクがあります。また、組織ポリシーによって制限されている場合は失敗します。本番環境では適切な認証を設定してください。
@@ -304,4 +318,3 @@ agents-cli deploy --status
 
 - **Cloud Trace**: エージェントのツール呼び出し（インメモリ関数）のレイテンシと実行パスの可視化
 - **Cloud Logging**: プロンプトインジェクション検出やエラーハンドリングのログ記録
-- **BigQuery**: ユーザーのインテントと決済完了率（7ステップの到達度）の定量的なビジネス分析
