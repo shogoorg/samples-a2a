@@ -49,7 +49,7 @@ graph TD
     end
     
     Store -->|状態同期 / --session-id 検証| FastAPI
-    ADK -.->|otel_to_cloud=True| GCP[Google Cloud Trace / Logging / BigQuery]
+    ADK -.->|otel_to_cloud=True| GCP[Google Cloud Trace / Logging ]
 ```
 ※ A2Aクライアント（他エージェント）との間では、JSON-RPC 2.0（`execute` メソッド）に準拠したメッセージングと、セッションIDによる状態同期を行います。
 
