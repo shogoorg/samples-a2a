@@ -1,5 +1,33 @@
 # Cymbal Retail A2A Unified Agent Architecture
 
+## アーキテクチャの選択（インメモリ一体型 vs REST API連携型） / Architectural Choice (In-Memory Unified vs. REST API Integration)
+
+### 日本語 / Japanese
+
+本プロジェクト（A2A版）は「DevOps × AI Agent Hackathon」へ、もう一方のREST API連携版は「AI Agents: Intensive Vibe Coding Capstone Project」へそれぞれ提出されており、それぞれの目的や要件に合わせて最適なアーキテクチャを採用しています。
+
+| 比較項目 | REST API連携構成 (分散型) | A2Aインメモリ一体型構成 [本作] |
+| :--- | :--- | :--- |
+| **提出先ハッカソン** | **AI Agents: Intensive Vibe Coding Capstone Project** | **DevOps × AI Agent Hackathon** |
+| **システム結合度** | 疎結合 (Decoupled) | 密結合・インメモリ一体型 (Unified / Co-located) |
+| **通信形態** | エージェントと加盟店サーバーがネットワーク経由で通信 | 単一のFastAPIプロセス内にエージェントランタイムとモックDBを同居、インメモリで直接データ操作 |
+| **主なメリット** | 標準的なクライアント・サーバー構成。既存の外部APIや実システムへの移行・統合が容易 | ネットワークオーバーヘッドが皆無で超高速。通信障害のリスクがなく、強固な決定論的実行が可能 |
+| **エージェント間連携** | 単一エージェントとサーバーのやり取りに特化 | A2A（Agent-to-Agent）通信用のJSON-RPCルートを公開。将来の複数エージェント協調シナリオをサポート |
+
+### English
+
+This project (A2A version) is submitted to the **DevOps × AI Agent Hackathon**, while the REST API integration version is submitted to the **AI Agents: Intensive Vibe Coding Capstone Project**. Each adopts the optimal architecture tailored to its respective hackathon requirements.
+
+| Comparison Metric | REST API Integration (Traditional Distributed) | A2A In-Memory Unified [This Project] |
+| :--- | :--- | :--- |
+| **Target Hackathon** | **AI Agents: Intensive Vibe Coding Capstone Project** | **DevOps × AI Agent Hackathon** |
+| **System Coupling** | Decoupled | Unified / Co-located |
+| **Communication Flow** | The agent and the merchant server communicate over the network via APIs | The agent runtime and DB are co-located in a single FastAPI process, executing data operations directly in-memory |
+| **Primary Benefits** | Standard client-server structure, making it highly portable and easier to integrate with real production systems | Zero network overhead for ultra-low latency; immune to network/transport failures, ensuring deterministic execution |
+| **Multi-Agent / A2A** | Tailored for single-agent-to-server scenarios | Publishes JSON-RPC routes for Agent-to-Agent (A2A) communication, facilitating future collaborative multi-agent scenarios |
+
+---
+
 本プロジェクトは、Gemini Enterprise Agent Platform (ADK 2.0) を活用し、エンタープライズの商取引における自動化と絶対的な信頼性を両立させるための参照実装です。 UCP（Universal Commerce Protocol）A2A拡張仕様に基づき、エージェントランタイムとバックエンドロジックを単一プロセス内にインメモリで統合することで、従来の分散システムが抱えていたネットワーク遅延や通信障害リスクを根本から排除した「インメモリ一体型（Unified/Co-located）A2Aアーキテクチャ」を提供します。さらに、agents-cli を通じた自動評価・CI/CDパイプラインを統合し、モダンなDevOpsプロセスに準拠したAIエージェント開発サイクルを実証します。
 
 免責事項: 本プロジェクトは Cymbal Retail Agent with UCP Extension and A2A のクローンおよび再利用バージョンであり、agents-cli を使用した対話型ショッピングフローとエージェント検証をサポートするためにリファクタリングされています。
@@ -53,16 +81,6 @@ graph TD
 ```
 ※ A2Aクライアント（他エージェント）との間では、JSON-RPC 2.0（`execute` メソッド）に準拠したメッセージングと、セッションIDによる状態同期を行います。
 
-### REST版（samples-rest）とのアーキテクチャの違い
-
-ハッカソンに同時提出するREST版（samples-rest）とは、システム結合度および通信の決定論性の面で明確なアプローチの差別化を行っています。
-
-| 比較項目 | REST版 (samples-rest) | A2A版 (samples-a2a) [本作] |
-| :--- | :--- | :--- |
-| **システム結合度** | 疎結合 (Decoupled) | 密結合・インメモリ一体型 (Unified / Co-located) |
-| **通信形態** | エージェントと加盟店サーバーがネットワーク（UCP準拠REST API）経由で通信 | 単一のFastAPIプロセス内にエージェントランタイムとモックDBを同居、インメモリで直接データ操作 |
-| **主なメリット** | 標準的なクライアント・サーバー構成。既存の外部APIや実システムへの移行・統合が容易 | ネットワークオーバーヘッドが皆無で超高速。通信障害のリスクがなく、強固な決定論的実行が可能 |
-| **エージェント間連携** | 単一エージェントとサーバーのやり取りに特化 | A2A（Agent-to-Agent）通信用のJSON-RPCルートを公開。将来の複数エージェント協調シナリオをサポート |
 
 ### コンポーネントの説明
 
