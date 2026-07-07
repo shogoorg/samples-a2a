@@ -33,19 +33,19 @@ agent/
 
 ```mermaid
 graph TD
-    User([ユーザー / CLI / A2Aクライアント]) -->|自然言語インテント / JSON-RPC| FastAPI[FastAPI Server (fast_api_app.py)]
+    User["ユーザー / CLI / A2Aクライアント"] -->|自然言語インテント / JSON-RPC| FastAPI["FastAPI Server - fast_api_app.py -"]
     
     subgraph Single_Process_Space [単一プロセスメモリ空間 (Unified Host)]
-        FastAPI -->|コンテキスト転送 / A2Aルーティング| ADK[ADK 2.0 Runtime (agent.py)]
-        ADK -->|Root Agent / Shopper Agent| LLM(gemini-flash-latest)
+        FastAPI -->|コンテキスト転送 / A2Aルーティング| ADK["ADK 2.0 Runtime - agent.py -"]
+        ADK -->|Root Agent / Shopper Agent| LLM["gemini-flash-latest"]
         
-        FastAPI -->|拡張のアクティベーション| Extensions[A2A Extensions (a2a_extensions/)]
+        FastAPI -->|拡張のアクティベーション| Extensions["A2A Extensions - a2a_extensions/ -"]
         ADK -.->|UcpExtension 有効化チェック| Extensions
         
-        ADK -->|インメモリ関数呼び出し| Skills[Agent Skills (Tools)]
+        ADK -->|インメモリ関数呼び出し| Skills["Agent Skills - Tools -"]
         
-        Skills -->|Direct Python Call| Store[UCP Store / Mock DB (store.py)]
-        Skills -->|Direct Python Call| Payment[Payment Processor (payment_processor.py)]
+        Skills -->|Direct Python Call| Store["UCP Store / Mock DB - store.py -"]
+        Skills -->|Direct Python Call| Payment["Payment Processor - payment_processor.py -"]
     end
     
     Store -->|状態同期 / --session-id 検証| FastAPI
