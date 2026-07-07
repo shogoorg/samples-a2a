@@ -1,94 +1,102 @@
-# samples-a2a
+# Cymbal Retail A2A Unified Agent Architecture
 
-このプロジェクトは、`agents-cli` を使用して UCP 拡張および A2A（Agent-to-Agent）に対応した Cymbal Retail エージェントを実行するためのものです。
+本プロジェクトは、Gemini Enterprise Agent Platform (ADK 2.0) を活用し、エンタープライズの商取引における自動化と絶対的な信頼性を両立させるための参照実装です。 UCP（Universal Commerce Protocol）A2A拡張仕様に基づき、エージェントランタイムとバックエンドロジックを単一プロセス内にインメモリで統合することで、従来の分散システムが抱えていたネットワーク遅延や通信障害リスクを根本から排除した「インメモリ一体型（Unified/Co-located）A2Aアーキテクチャ」を提供します。さらに、agents-cli を通じた自動評価・CI/CDパイプラインを統合し、モダンなDevOpsプロセスに準拠したAIエージェント開発サイクルを実証します。
 
-`agents-cli` は、Gemini Enterprise Agent Platform 上でエージェントを構築するための CLI およびスキルです。
-
-UCP（Universal Commerce Protocol）は、コマースプラットフォーム、加盟店、決済プロバイダー間の相互運用性を可能にするオープンスタンダードです。このエージェントは、UCP 規格およびその A2A 実装を参照して、AI 搭載ショッピングアシスタントを構築するデモを示しています。
-
-免責事項：このリポジトリは、Cymbal Retail Agent with UCP Extension and A2A のクローンおよび再利用バージョンであり、インタラクティブなショッピング フローとエージェント検証をサポートするためにリファクタリングされています。
+免責事項: 本プロジェクトは Cymbal Retail Agent with UCP Extension and A2A のクローンおよび再利用バージョンであり、agents-cli を使用した対話型ショッピングフローとエージェント検証をサポートするためにリファクタリングされています。
 
 ## プロジェクト構成
 
 ```
 agent/
-├── app/                       # エージェントのコアコード (ADK 2.0)
-│   ├── agent.py               # メインのエージェントロジック (買い物アシスタント)
-│   ├── fast_api_app.py        # FastAPI バックエンドサーバー (ADK 統合)
-│   ├── store.py               # 統合された小売店ステート管理 (Mock DB)
-│   ├── payment_processor.py   # 決済プロセッサーロジック
-│   ├── app_utils/             # アプリのユーティリティとヘルパー
-│   └── data/                  # 小売店の静的データ (products.json, ucp.json)
+├── app/
+│   ├── __init__.py
+│   ├── a2a_extensions/        # A2Aプロトコル（UCP拡張仕様）の解決とアクティベーション
+│   │   ├── base_extension.py
+│   │   └── ucp_extension.py
+│   ├── agent.py               # ADK 2.0エージェント定義およびツールのバインド
+│   ├── fast_api_app.py        # FastAPIサーバー、A2Aルート、JSON-RPCハンドラー
+│   ├── payment_processor.py   # インメモリ模擬決済ロジック
+│   ├── store.py               # インメモリUCPストア（Mock DB）およびセッション同期
+│   └── app_utils/             # アプリのユーティリティとヘルパー
+├── data/
+│   ├── products.json          # 小売店の静的データ（商品カタログ）
+│   ├── ucp.json               # UCP設定プロファイル
+│   └── gold_tasks.json        # agents-cli eval で使用する評価用ゴールドデータセット
 ├── tests/                     # ユニットテスト、統合テスト、負荷テスト
-├── GEMINI.md                  # AI 支援開発ガイド
-└── pyproject.toml             # プロジェクトの依存関係定義
+├── pyproject.toml             # uv 依存関係定義およびプロジェクトメタデータ
+└── README.md                  # 本ドキュメント
 ```
-
-> 💡 **Tip:** AI 支援開発には [Antigravity CLI](https://antigravity.google/) を使用してください。プロジェクトのコンテキストは `GEMINI.md` に事前設定されています。
 
 ## アーキテクチャ概要
 
-A2A（Agent-to-Agent）構成では、バックエンド機能（FastAPIサーバー）とエージェントランタイム（ADK 2.0）が1つのプロセスに統合（インメモリ同居）されています。
+本A2A版（samples-a2a）アーキテクチャの最大の特徴は、エージェント（ADK 2.0 ランタイム）と加盟店ストアバックエンド（Mock DB / 決済ロジック）が、ネットワークを介さず単一のFastAPIホストプロセス内の同一メモリ空間に同居（Co-located）している点にあります。
 
 ```mermaid
 graph TD
-    subgraph Client_Side ["1. 開発クライアント"]
-        User["ユーザー"] <-->|"対話"| Playground["Playground / 開発 UI"]
+    User([ユーザー / CLI / A2Aクライアント]) -->|自然言語インテント / JSON-RPC| FastAPI[FastAPI Server (fast_api_app.py)]
+    
+    subgraph Single_Process_Space [単一プロセスメモリ空間 (Unified Host)]
+        FastAPI -->|コンテキスト転送 / A2Aルーティング| ADK[ADK 2.0 Runtime (agent.py)]
+        ADK -->|Root Agent / Shopper Agent| LLM(gemini-flash-latest)
+        
+        FastAPI -->|拡張のアクティベーション| Extensions[A2A Extensions (a2a_extensions/)]
+        ADK -.->|UcpExtension 有効化チェック| Extensions
+        
+        ADK -->|インメモリ関数呼び出し| Skills[Agent Skills (Tools)]
+        
+        Skills -->|Direct Python Call| Store[UCP Store / Mock DB (store.py)]
+        Skills -->|Direct Python Call| Payment[Payment Processor (payment_processor.py)]
     end
-
-    subgraph ADK_Agent_System ["2. A2A 統合エージェント (agent/app/)"]
-        Playground <-->|"API リクエスト"| FastAPI["FastAPI / ADK Runner Host"]
-        FastAPI <-->|"メッセージルーティング"| Agent["ADK エージェント (agent.py)"]
-        Agent <-->|"推論と計画"| Gemini["Vertex AI (Gemini)"]
-        Agent <-->|"インメモリ状態管理 / 決済"| Backend["store.py / payment_processor.py"]
-    end
+    
+    Store -->|状態同期 / --session-id 検証| FastAPI
+    ADK -.->|otel_to_cloud=True| GCP[Google Cloud Trace / Logging / BigQuery]
 ```
+※ A2Aクライアント（他エージェント）との間では、JSON-RPC 2.0（`execute` メソッド）に準拠したメッセージングと、セッションIDによる状態同期を行います。
 
-### 💡 REST版（[samples-rest](https://github.com/shogoorg/samples-rest)）とのアーキテクチャの違い
+### REST版（samples-rest）とのアーキテクチャの違い
 
-ハッカソンに同時提出するREST版（Python REST Agent）と本A2A版は、アプローチが異なります。
+ハッカソンに同時提出するREST版（samples-rest）とは、システム結合度および通信の決定論性の面で明確なアプローチの差別化を行っています。
 
-| 比較項目 | REST版 (samples-rest) | A2A版 (samples-a2a) |
+| 比較項目 | REST版 (samples-rest) | A2A版 (samples-a2a) [本作] |
 | :--- | :--- | :--- |
-| **システム結合度** | **疎結合 (Decoupled)** | **密結合・インメモリ一体型 (Unified/Co-located)** |
-| **通信形態** | エージェント（Client）と加盟店サーバー（FastAPI）が**ネットワーク（REST API）経由で通信** | 単一のFastAPIプロセス内にエージェントランタイムとモックDBを同居させ、**インメモリで直接データ操作** |
-| **主なメリット** | 標準的なクライアント・サーバー構成で、実システムへの移行・既存APIとの統合が容易 | ネットワークオーバーヘッドが皆無で超高速。通信エラーがなく、強固な決定論的実行が可能 |
-| **エージェント間連携** | 単一エージェントとサーバーのやり取りに特化 | **A2A（Agent-to-Agent）通信用のJSON-RPCルート**を公開し、将来的な複数エージェント間連携をサポート |
+| **システム結合度** | 疎結合 (Decoupled) | 密結合・インメモリ一体型 (Unified / Co-located) |
+| **通信形態** | エージェントと加盟店サーバーがネットワーク（UCP準拠REST API）経由で通信 | 単一のFastAPIプロセス内にエージェントランタイムとモックDBを同居、インメモリで直接データ操作 |
+| **主なメリット** | 標準的なクライアント・サーバー構成。既存の外部APIや実システムへの移行・統合が容易 | ネットワークオーバーヘッドが皆無で超高速。通信障害のリスクがなく、強固な決定論的実行が可能 |
+| **エージェント間連携** | 単一エージェントとサーバーのやり取りに特化 | A2A（Agent-to-Agent）通信用のJSON-RPCルートを公開。将来の複数エージェント協調シナリオをサポート |
 
 ### コンポーネントの説明
 
-1. **FastAPI / ADK Runner Host (`fast_api_app.py`)**
-   - **概要**: エージェントランタイムをホストし、A2Aルーティングルートを公開する統合Webサーバー。
-   - **役割**: クライアントや他のエージェントからのメッセージを受信し、ADK Runnerを介してエージェントモデルに処理を委ねます。
-2. **ADK エージェント (`agent.py`)**
-   - **概要**: Gemini APIと連携する自律ショッピングエージェント。
-   - **役割**: カタログ検索、カート管理、配送先登録、決済などの意思決定を行い、統合されたスキル（ツール）を実行します。
-3. **インメモリ状態管理 / 決済 (`store.py` / `payment_processor.py`)**
-   - **概要**: 加盟店のコアビジネスロジック。
-   - **役割**: カタログ商品データや、セッションごとのカート状態、決済処理をインメモリで直接管理します。
+1. **FastAPIサーバー (`fast_api_app.py`)**: エージェントランタイムをホストし、外部からの対話リクエストや将来的なエージェント間（Agent-to-Agent）連携のためのJSON-RPCエンドポイントを公開します。
+2. **A2A拡張モジュール (`a2a_extensions/`)**: A2Aクライアント（他エージェント）との通信において、UCP仕様などのプロトコル拡張の解決、および機能のアクティベーションを管理するネゴシエーション層です。
+3. **ADKエージェント (`agent.py`)**: gemini-flash-latest をコアに、自然言語インテントの解釈から7ステップのコマースパイプライン（カタログ検索、カート追加、チェックアウト、決済）を自律的に制御します。
+4. **インメモリ状態管理・決済 (`store.py`, `payment_processor.py`)**: UCP A2A仕様に準拠したデータ操作ロジック。ネットワークを介さず、エージェントスキル（ツール）から直接Python関数として呼び出されます。
 
 ## アーキテクチャの詳細 (Architectural Breakdown)
 
-1. **ビジネス上の課題とエージェントによる解決策:**
-   従来の企業の調達・取引ワークフローは、複雑なAPI連携と人為的ミスが発生しやすい課題がありました。本ソリューションでは、静的なスクリプトを状態管理機能付きの対話型エージェントに置き換えます。`shopper_agent` は自然言語による柔軟なユーザー案内を行いつつ、実際の実行処理は決定論的なスキル（ツール）パスに制限します。
-2. **既存ツールセットの巧みな活用 (インメモリ統合):**
-   REST API経由の疎結合な通信を行うのではなく、A2A実装では Cymbal Retail の既存のバックエンドロジック（`store.py` や `payment_processor.py`）を直接ADKエージェントのスキル（ツール関数）にインポートしてバインドしています。これにより、エージェントはローカルのモックDBデータを直接操作でき、極めて高速かつ決定論的な処理を可能にしています。
-3. **決定論的なセキュリティガードレール:**
-   決済や注文などの重要な金融操作では、LLMのハルシネーションは許されません。カート状態、顧客情報、最終決済などのコアトランザクション変数は、LLMコアから完全に分離された状態でツールにより処理されます。また、コマンド間でセッションを維持するために `--session-id` の検証を強制することで、プロンプトインジェクションや不正なカート改ざんを防ぎます。
-4. **再現可能なデプロイアーキテクチャ:**
-   システム全体がクラウドに最適化されています。エージェントランタイムとAPIサーバー（`fast_api_app.py`）が1つのコンテナに統合されており、`agents-cli scaffold enhance` を通じて Terraform 構成を生成後、`agents-cli deploy` のワンコマンドで **Google Cloud Run** にデプロイ可能です。
+1. **ビジネス課題の解決策 (Business Solution)**
+   断片化されたAPIや手動の「バイブスチェック」によるシステム間連携の不具合、人的ミスを、ADK 2.0による自律的なコマースオーケストレーションによって解決します。多言語での曖昧な入力に対しても、一貫した取引パイプラインを自動生成・実行します。
+2. **既存ツールセットの活用 (Leveraging Tools)**
+   既存の加盟店ビジネスロジックや決済アセット（`store.py`, `payment_processor.py`）を破棄することなく、ADK 2.0のデコレーター（`@tool`）を用いてそのままエージェントスキルとして統合。IT資産を最大化しつつ高速にAI化を実現します。
+3. **決定論的なセキュリティガードレール (Security Guardrails)**
+   すべての対話およびインメモリ操作において、連続する端末コマンド全体で検証済みの `--session-id` フラグの要求を決定論的に強制します。これにより、プロンプトインジェクションやハルシネーションによる不正なカート改ざん（価格変更や数量の不正操作など）をシステム層でシャットアウトします。
+4. **A2A (Agent-to-Agent) 通信プロトコル**
+   他の購買エージェントや加盟店エージェントと疎結合に連携するため、JSON-RPC 2.0 に準拠したメッセージング・インターフェースを標準実装しています。受信した `execute` メソッドおよびプロンプトパラメータに基づき、同一プロセス内のADKエージェントが自律的にインメモリDBを操作し、構造化された処理結果を即座に呼び出し元エージェントへ返します。
+5. **再現可能なデプロイ構成 (Reproducible Deployment)**
+   `agents-cli scaffold enhance` を介して、インフラのコード化（IaC: Terraform）とCI/CDパイプラインを自動生成。Google Cloud Run をターゲットとした本番品質のセキュアな環境を、コマンド一つで再現可能にします。
 
-## 主要なコード実装 (Key Implementations)
+## 主要コード実装 (Key Implementations)
 
-システム設計の参考となる、エージェントの推論とプラットフォーム構成を実装するコアコードです。
-
-#### 1. エージェントの定義とツール登録 (`app/agent.py`)
-`shopper_agent` にビジネスロジックを処理する決定論的なツール群（インメモリでの商品検索やチェックアウト更新）をバインドしています：
+### 1. エージェントの定義とツール登録 (`app/agent.py`)
+ADK 2.0を用いてエージェントを構築し、インメモリのストア操作関数を自律的ツールとしてバインドします。
 
 ```python
 # app/agent.py
+from google.adk import Agent
+from google.adk.apps import App
+from google.adk.models import Gemini
+
 root_agent = Agent(
-    name="root_agent",
+    name="shopper_agent",
     model=Gemini(
         model="gemini-flash-latest",
         retry_options=types.HttpRetryOptions(attempts=3),
@@ -114,7 +122,7 @@ app = App(
 )
 ```
 
-#### 2. エージェントランタイムサーバー (`app/fast_api_app.py`)
+### 2. エージェントランタイムサーバー (`app/fast_api_app.py`)
 FastAPIを使用してADKエージェントとA2Aルートを連携させ、クラウド実行環境をブートストラップします：
 
 ```python
@@ -137,8 +145,35 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
         agent=root_agent,
         runner=runner,
         task_store=InMemoryTaskStore(),
+        rpc_path=f"/a2a/{adk_app.name}",
     )
     yield
+```
+
+### 3. A2Aプロトコル拡張とアクティベーション (`app/a2a_extensions/base_extension.py`)
+他のエージェントから要求されたUCP拡張仕様のネゴシエーション（合意）およびアクティベーションロジックをハンドリングします。
+
+```python
+# app/a2a_extensions/base_extension.py（一部抜粋）
+class A2AExtensionBase(ABC):
+    """A2A拡張仕様のベースクラス。AgentCard（メタデータ）への追加やアクティベートを処理します。"""
+    URI: str
+
+    def get_agent_extension(self) -> AgentExtension:
+        return AgentExtension(
+            uri=self.get_extension_uri(),
+            description=self._description,
+            required=False,
+            params=self._params,
+        )
+
+    def activate(self, context: RequestContext) -> None:
+        """リクエストコンテキストから要求された拡張URIを照合し、有効化します"""
+        if not context.requested_extensions:
+            return
+
+        if self.get_extension_uri() in context.requested_extensions:
+            context.add_activated_extension(self.get_extension_uri())
 ```
 
 ## 事前準備
@@ -146,82 +181,100 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
 開始する前に、以下がインストールされていることを確認してください。
 - **uv**: Python パッケージマネージャー (このプロジェクトのすべての依存関係管理に使用) — [インストール方法](https://docs.astral.sh/uv/getting-started/installation/)
 - **agents-cli**: エージェント CLI — `uv tool install google-agents-cli` でインストール
-- **Google Cloud SDK**: GCP サービス用 — [インストール方法](https://cloud.google.com/sdk/docs/install)
+- **Google Cloud SDK (gcloud)**: GCP サービス用 — [インストール方法](https://cloud.google.com/sdk/docs/install)
 
 ## クイックスタート
 
 ### 1. 依存関係のインストール
 `agents-cli` および関連スキルをセットアップします（未実行の場合のみ）：
-
 ```bash
 uvx google-agents-cli setup
 ```
 
-プロジェクト全体のPythonパッケージをインストールします：
-
+プロジェクト全体の依存関係をインストールします：
 ```bash
-agents-cli install
+uv sync
 ```
 
-### 2. ローカルでの起動とテスト
-対話型のローカル開発用プレイグラウンドを起動して、エージェントをテストします：
-
+### 2. ローカルサーバーの起動
 ```bash
-agents-cli playground
+uv run uvicorn app.fast_api_app:app --reload --port 8000
 ```
 
-### 3. コマンドラインからのテスト
-ターミナルから直接コマンドを実行して、ショッピングフロー全体をテストすることも可能です：
+### 3. CLIおよびAPIからのテスト（対話実行）
+agents-cli run を使用してインメモリのエージェントと対話するか、他のエージェントからの JSON-RPC A2A リクエストをシミュレートしてテストします。
+
+#### CLIからの実行テスト（多言語および状態維持の確認）
+セッションIDを指定して実行することで、一連のショッピングフローを多言語を跨いでテストできます。
 
 ```bash
-# 1. 商品の検索テスト
-agents-cli run "在庫があるクッキーを見せてください"
+# 1. 商品の検索とカート追加（英語）
+agents-cli run --prompt "Find a blue shirt and add it to my cart" --session-id "test-session-001"
 
-# 2. カート追加テスト (BISC-001を追加)
-# ※直前のコマンドが出力した --session-id を付与してセッションを維持してください
-agents-cli run "私のチェックアウトに BISC-001 を追加してください" --session-id <SESSION_ID>
+# 2. 配送先情報の登録（日本語）
+agents-cli run --prompt "私の配送情報を設定してください：名前は John Doe、住所は 1600 Amphitheatre Pkwy, Mountain View, CA、郵便番号は 94043、メールアドレスは john.doe@example.com です" --session-id "test-session-001"
 
-# 3. 配送先情報の登録テスト
-agents-cli run "私の配送情報を設定してください：名前は John Doe、住所は 1600 Amphitheatre Pkwy, Mountain View, CA、郵便番号は 94043、メールアドレス is john.doe@example.com です" --session-id <SESSION_ID>
+# 3. 決済完了テスト（日本語）
+agents-cli run --prompt "さっきのカートの商品をチェックアウトして決済を完了させてください" --session-id "test-session-001"
+```
 
-# 4. 決済完了テスト
-agents-cli run "今すぐ私のチェックアウトを完了してください" --session-id <SESSION_ID>
+#### A2A通信（JSON-RPC 2.0）のローカル疎通テスト
+FastAPIサーバーが起動した状態で、別のエージェントから送信されるA2Aメッセージを模したリクエストを送信します。
+```bash
+curl -X POST http://localhost:8000/a2a/app \
+  -H "Content-Type: application/json" \
+  -d '{
+    "jsonrpc": "2.0",
+    "method": "execute",
+    "params": {
+      "prompt": "Find a blue shirt and add it to my cart",
+      "session_id": "a2a-session-001"
+    },
+    "id": 1
+  }'
 ```
 
 ## デプロイ (Deployment)
 
 エージェントおよび統合された UCP バックエンドを Google Cloud Run にデプロイします。
 
-### 1. デプロイターゲットの追加
-プロジェクトに Cloud Run デプロイ用の構成を追加します：
-
+### 1. デプロイ構成とTerraformの追加 (IaC)
+`agents-cli scaffold enhance` を実行し、CI/CDパイプラインとTerraform構成を追加します。
 ```bash
 agents-cli scaffold enhance --deployment-target cloud_run
 ```
 
-### 2. デプロイの実行
-Google Cloud プロジェクトを設定し、デプロイを実行します：
+### 2. CI/CDとインフラ全体の自動セットアップ
+`agents-cli infra cicd` を使用し、パイプラインとインフラ全体をワンコマンドでセットアップします。
+```bash
+agents-cli infra cicd
+```
 
+### 3. デプロイの実行
+gcloudのプロジェクト設定を確認し、デプロイを実行します。
 ```bash
 # 1. Google Cloud プロジェクトを設定
-gcloud config set project <YOUR_PROJECT_ID>
+gcloud config set project <YOUR_GCP_PROJECT_ID>
 
-# 2. デプロイを実行
-agents-cli deploy --project=<YOUR_PROJECT_ID> --no-confirm-project
+# 2. デプロイの実行
+agents-cli deploy
 
 # 3. エージェントサービスを一般公開 (必要な場合のみ)
+# ※ インターネット経由で呼び出すために必要です
 gcloud run services add-iam-policy-binding samples-a2a \
   --member="allUsers" \
   --role="roles/run.invoker" \
-  --region=us-east1 \
-  --project=<YOUR_PROJECT_ID>
+  --region=us-central1 \
+  --project=<YOUR_GCP_PROJECT_ID>
 ```
+
+実行が完了すると、本番環境に対応した一般公開可能かつスケール可能なサービスURLが出力されます。
+このURLの `/a2a/app` エンドポイント（例: `https://<YOUR_CLOUD_RUN_URL>/a2a/app`）が、他のエージェントと接続するための **A2A外部エンドポイント** として機能します。
 
 > ⚠️ **一般公開に関するセキュリティ警告:**
 > `allUsers` への公開は、インターネット上の誰でもエージェントを呼び出せるようになるため、Gemini API等の予期せぬ課金が発生するリスクがあります。また、組織ポリシーによって制限されている場合は失敗します。本番環境では適切な認証を設定してください。
 
 デプロイステータスは以下で確認できます：
-
 ```bash
 agents-cli deploy --status
 ```
@@ -232,7 +285,7 @@ agents-cli deploy --status
 | :--- | :--- |
 | `agents-cli install` | uv を使用してエージェントの依存関係をインストールします |
 | `agents-cli playground` | ローカル開発用のプレイグラウンド（Web UI）を起動します |
-| `agents-cli lint` | コード of 品質チェック（静的解析）を実行します |
+| `agents-cli lint` | コード品質チェック（静的解析）を実行します |
 | `agents-cli eval` | エージェントの動作評価（グレーディング）を実行します |
 | `uv run pytest tests/unit tests/integration` | ユニットテストおよび統合テストを実行します |
 
@@ -246,4 +299,9 @@ agents-cli deploy --status
 
 ## オブザーバビリティ (Observability)
 
-Cloud Trace、BigQuery、Cloud Logging へのテレメトリデータ（実行トレースやログ）の自動エクスポートが組み込まれています。
+実運用（とどけるフェーズ）における可観測性を担保するため、エンタープライズ向けのOpenTelemetry設定を有効化しています。
+エージェント定義において `otel_to_cloud=True` を設定することにより、エージェントの推論プロセス、インメモリのツール実行トレース、セッション状態の遷移データが以下の Google Cloud コンポーネントへ自動的にエクスポートされ、リアルタイムの監視と監査を可能にします。
+
+- **Cloud Trace**: エージェントのツール呼び出し（インメモリ関数）のレイテンシと実行パスの可視化
+- **Cloud Logging**: プロンプトインジェクション検出やエラーハンドリングのログ記録
+- **BigQuery**: ユーザーのインテントと決済完了率（7ステップの到達度）の定量的なビジネス分析
