@@ -2,18 +2,6 @@
 
 ## アーキテクチャの選択（インメモリ一体型 vs REST API連携型） / Architectural Choice (In-Memory Unified vs. REST API Integration)
 
-### 日本語 / Japanese
-
-本プロジェクト（A2A版）は「DevOps × AI Agent Hackathon」へ、もう一方のREST API連携版は「AI Agents: Intensive Vibe Coding Capstone Project」へそれぞれ提出されており、それぞれの目的や要件に合わせて最適なアーキテクチャを採用しています。
-
-| 比較項目 | REST API連携構成 (分散型) | A2Aインメモリ一体型構成 [本作] |
-| :--- | :--- | :--- |
-| **提出先ハッカソン** | **AI Agents: Intensive Vibe Coding Capstone Project** | **DevOps × AI Agent Hackathon** |
-| **システム結合度** | 疎結合 (Decoupled) | 密結合・インメモリ一体型 (Unified / Co-located) |
-| **通信形態** | エージェントと加盟店サーバーがネットワーク経由で通信 | 単一のFastAPIプロセス内にエージェントランタイムとモックDBを同居、インメモリで直接データ操作 |
-| **主なメリット** | 標準的なクライアント・サーバー構成。既存の外部APIや実システムへの移行・統合が容易 | ネットワークオーバーヘッドが皆無で超高速。通信障害のリスクがなく、強固な決定論的実行が可能 |
-| **エージェント間連携** | 単一エージェントとサーバーのやり取りに特化 | A2A（Agent-to-Agent）通信用のJSON-RPCルートを公開。将来の複数エージェント協調シナリオをサポート |
-
 ### English
 
 This project (A2A version) is submitted to the **DevOps × AI Agent Hackathon**, while the REST API integration version is submitted to the **AI Agents: Intensive Vibe Coding Capstone Project**. Each adopts the optimal architecture tailored to its respective hackathon requirements.
@@ -25,6 +13,18 @@ This project (A2A version) is submitted to the **DevOps × AI Agent Hackathon**,
 | **Communication Flow** | The agent and the merchant server communicate over the network via APIs | The agent runtime and DB are co-located in a single FastAPI process, executing data operations directly in-memory |
 | **Primary Benefits** | Standard client-server structure, making it highly portable and easier to integrate with real production systems | Zero network overhead for ultra-low latency; immune to network/transport failures, ensuring deterministic execution |
 | **Multi-Agent / A2A** | Tailored for single-agent-to-server scenarios | Publishes JSON-RPC routes for Agent-to-Agent (A2A) communication, facilitating future collaborative multi-agent scenarios |
+
+### 日本語 / Japanese
+
+本プロジェクト（A2A版）は「DevOps × AI Agent Hackathon」へ、もう一方のREST API連携版は「AI Agents: Intensive Vibe Coding Capstone Project」へそれぞれ提出されており、それぞれの目的や要件に合わせて最適なアーキテクチャを採用しています。
+
+| 比較項目 | REST API連携構成 (分散型) | A2Aインメモリ一体型構成 [本作] |
+| :--- | :--- | :--- |
+| **提出先ハッカソン** | **AI Agents: Intensive Vibe Coding Capstone Project** | **DevOps × AI Agent Hackathon** |
+| **システム結合度** | 疎結合 (Decoupled) | 密結合・インメモリ一体型 (Unified / Co-located) |
+| **通信形態** | エージェントと加盟店サーバーがネットワーク経由で通信 | 単一のFastAPIプロセス内にエージェントランタイムとモックDBを同居、インメモリで直接データ操作 |
+| **主なメリット** | 標準的なクライアント・サーバー構成。既存の外部APIや実システムへの移行・統合が容易 | ネットワークオーバーヘッドが皆無で超高速。通信障害のリスクがなく、強固な決定論的実行が可能 |
+| **エージェント間連携** | 単一エージェントとサーバーのやり取りに特化 | A2A（Agent-to-Agent）通信用のJSON-RPCルートを公開。将来の複数エージェント協調シナリオをサポート |
 
 ---
 
