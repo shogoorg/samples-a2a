@@ -21,10 +21,10 @@ This project (A2A version) is submitted to the **DevOps × AI Agent Hackathon**,
 | 比較項目 | REST API連携構成 (分散型) | A2Aインメモリ一体型構成 [本作] |
 | :--- | :--- | :--- |
 | **提出先ハッカソン** | **AI Agents: Intensive Vibe Coding Capstone Project** | **DevOps × AI Agent Hackathon** |
-| **システム結合度** | 疎結合 (Decoupled) | 密結合・インメモリ一体型 (Unified / Co-located) |
+| **システム結合度** | 疎結合 | 密結合・インメモリ一体型 |
 | **通信形態** | エージェントと加盟店サーバーがネットワーク経由で通信 | 単一のFastAPIプロセス内にエージェントランタイムとモックDBを同居、インメモリで直接データ操作 |
 | **主なメリット** | 標準的なクライアント・サーバー構成。既存の外部APIや実システムへの移行・統合が容易 | ネットワークオーバーヘッドが皆無で超高速。通信障害のリスクがなく、強固な決定論的実行が可能 |
-| **エージェント間連携** | 単一エージェントとサーバーのやり取りに特化 | A2A（Agent-to-Agent）通信用のJSON-RPCルートを公開。将来の複数エージェント協調シナリオをサポート |
+| **エージェント間連携** | 単一エージェントとサーバーのやり取りに特化 | A2A通信用のJSON-RPCルートを公開。将来の複数エージェント協調シナリオをサポート |
 
 ---
 
@@ -84,25 +84,25 @@ graph TD
 
 ### コンポーネントの説明
 
-1. **FastAPIサーバー (`fast_api_app.py`)**: エージェントランタイムをホストし、外部からの対話リクエストや将来的なエージェント間（Agent-to-Agent）連携のためのJSON-RPCエンドポイントを公開します。
+1. **FastAPIサーバー (`fast_api_app.py`)**: エージェントランタイムをホストし、外部からの対話リクエストや将来的なエージェント間連携のためのJSON-RPCエンドポイントを公開します。
 2. **A2A拡張モジュール (`a2a_extensions/`)**: A2Aクライアント（他エージェント）との通信において、UCP仕様などのプロトコル拡張の解決、および機能のアクティベーションを管理するネゴシエーション層です。
 3. **ADKエージェント (`agent.py`)**: gemini-flash-latest をコアに、自然言語インテントの解釈から7ステップのコマースパイプライン（カタログ検索、カート追加、チェックアウト、決済）を自律的に制御します。
 4. **インメモリ状態管理・決済 (`store.py`, `payment_processor.py`)**: UCP A2A仕様に準拠したデータ操作ロジック。ネットワークを介さず、エージェントスキル（ツール）から直接Python関数として呼び出されます。
 
-## アーキテクチャの詳細 (Architectural Breakdown)
+## アーキテクチャの詳細
 
-1. **ビジネス課題の解決策 (Business Solution)**
+1. **ビジネス課題の解決策**
    断片化されたAPIや手動の「バイブスチェック」によるシステム間連携の不具合、人的ミスを、ADK 2.0による自律的なコマースオーケストレーションによって解決します。多言語での曖昧な入力に対しても、一貫した取引パイプラインを自動生成・実行します。
-2. **既存ツールセットの活用 (Leveraging Tools)**
+2. **既存ツールセットの活用**
    既存の加盟店ビジネスロジックや決済アセット（`store.py`, `payment_processor.py`）を破棄することなく、ADK 2.0のデコレーター（`@tool`）を用いてそのままエージェントスキルとして統合。IT資産を最大化しつつ高速にAI化を実現します。
-3. **決定論的なセキュリティガードレール (Security Guardrails)**
+3. **決定論的なセキュリティガードレール**
    すべての対話およびインメモリ操作において、連続する端末コマンド全体で検証済みの `--session-id` フラグの要求を決定論的に強制します。これにより、プロンプトインジェクションやハルシネーションによる不正なカート改ざん（価格変更や数量の不正操作など）をシステム層でシャットアウトします。
-4. **A2A (Agent-to-Agent) 通信プロトコル**
+4. **A2A 通信プロトコル**
    他の購買エージェントや加盟店エージェントと疎結合に連携するため、JSON-RPC 2.0 に準拠したメッセージング・インターフェースを標準実装しています。受信した `execute` メソッドおよびプロンプトパラメータに基づき、同一プロセス内のADKエージェントが自律的にインメモリDBを操作し、構造化された処理結果を即座に呼び出し元エージェントへ返します。
-5. **再現可能なデプロイ構成 (Reproducible Deployment)**
+5. **再現可能なデプロイ構成**
    `agents-cli scaffold enhance` を介して、インフラのコード化（IaC: Terraform）とCI/CDパイプラインを自動生成。Google Cloud Run をターゲットとした本番品質のセキュアな環境を、コマンド一つで再現可能にします。
 
-## 主要コード実装 (Key Implementations)
+## 主要コード実装
 
 ### 1. エージェントの定義とツール登録 (`app/agent.py`)
 ADK 2.0を用いてエージェントを構築し、インメモリのストア操作関数を自律的ツールとしてバインドします。
@@ -219,20 +219,20 @@ uvx google-agents-cli setup
 agents-cli install
 ```
 
-### 2. ローカルサーバーの起動 (A2A Server)
+### 2. ローカルサーバーの起動
 他エージェントとのA2A通信エンドポイントをホストするローカルサーバーを起動します：
 ```bash
 uv run uvicorn app.fast_api_app:app --reload --port 8000
 ```
 
-### 3. Web UIでの対話テスト (Playground)
+### 3. Web UIでの対話テスト
 **別のターミナルを開き**（`cd agent` でディレクトリ移動後）、`agents-cli` 標準のプレイグラウンドUIを起動してブラウザ上でチャットテストを行います：
 ```bash
 agents-cli playground
 ```
-起動後、ブラウザで表示されるURL（通常は `http://localhost:3000` など）にアクセスして対話します。
+起動後、ブラウザで表示されるURLにアクセスして対話します。
 
-### 4. CLIからの対話テスト (CLI Test)
+### 4. CLIからの対話テスト
 **別のターミナルで**、セッションIDを指定して実行することで、一連のショッピングフロー（検索 ➔ カート追加 ➔ 配送先登録 ➔ 決済完了）を対話テストできます。
 
 #### 日本語セッションでの実行例
@@ -267,11 +267,11 @@ agents-cli run "Set my shipping info: name is John Doe, address is 1600 Amphithe
 agents-cli run "Complete my checkout now" --session-id <SESSION_ID>
 ```
 
-## デプロイ (Deployment)
+## デプロイ
 
 エージェントおよび統合された UCP バックエンドを Google Cloud Run にデプロイします。
 
-### 1. デプロイ構成とTerraformの追加 (IaC)
+### 1. デプロイ構成とTerraformの追加
 `agents-cli scaffold enhance` を実行し、CI/CDパイプラインとTerraform構成を追加します。
 ```bash
 agents-cli scaffold enhance --deployment-target cloud_run
@@ -311,7 +311,7 @@ gcloud run services add-iam-policy-binding agent \
 agents-cli deploy --status
 ```
 
-## コマンド一覧 (Commands)
+## コマンド一覧
 
 | コマンド | 説明 |
 | :--- | :--- |
@@ -321,7 +321,7 @@ agents-cli deploy --status
 | `agents-cli eval` | エージェントの動作評価（グレーディング）を実行します |
 | `uv run pytest tests/unit tests/integration` | ユニットテストおよび統合テストを実行します |
 
-## プロジェクト管理 (Project Management)
+## プロジェクト管理
 
 | コマンド | 説明 |
 | :--- | :--- |
@@ -329,7 +329,7 @@ agents-cli deploy --status
 | `agents-cli infra cicd` | CI/CD パイプラインとインフラ全体をワンコマンドでセットアップします |
 | `agents-cli scaffold upgrade` | カスタマイズを保持したまま最新バージョンに自動アップグレードします |
 
-## オブザーバビリティ (Observability)
+## オブザーバビリティ
 
 実運用（とどけるフェーズ）における可観測性を担保するため、エンタープライズ向けのOpenTelemetry設定を有効化しています。
 エージェント定義において `otel_to_cloud=True` を設定することにより、エージェントの推論プロセス、インメモリのツール実行トレース、セッション状態の遷移データが以下の Google Cloud コンポーネントへ自動的にエクスポートされ、リアルタイムの監視と監査を可能にします。
