@@ -1,29 +1,54 @@
 {
   "eval_cases": [
     {
-      "eval_case_id": "greeting",
+      "eval_case_id": "step1_search_cookies",
       "prompt": {
         "role": "user",
-        "parts": [{"text": "Hello, what can you help me with?"}]
-      }
-    },
-    {
-      "eval_case_id": "weather_query",
-      "prompt": {
-        "role": "user",
-        "parts": [{"text": "What's the weather like in San Francisco?"}]
-      }
-    },
-    {
-      "eval_case_id": "capital_lookup",
-      "prompt": {
-        "role": "user",
-        "parts": [{"text": "What is the capital of France?"}]
+        "parts": [{"text": "在庫があるクッキーを見せてください"}]
       },
       "reference": {
         "response": {
           "role": "model",
-          "parts": [{"text": "The capital of France is Paris."}]
+          "parts": [{"text": "ユーザーに対して在庫のあるクッキー商品を検索・提示するために `search_shopping_catalog` ツールを適切に呼び出す必要があります。"}]
+        }
+      }
+    },
+    {
+      "eval_case_id": "step2_add_to_checkout",
+      "prompt": {
+        "role": "user",
+        "parts": [{"text": "私のチェックアウトに BISC-001 を追加してください"}]
+      },
+      "reference": {
+        "response": {
+          "role": "model",
+          "parts": [{"text": "`add_to_checkout` ツールを `product_id=\"BISC-001\"` で呼び出し、商品をチェックアウトに追加します。"}]
+        }
+      }
+    },
+    {
+      "eval_case_id": "step3_set_shipping",
+      "prompt": {
+        "role": "user",
+        "parts": [{"text": "私の配送情報を設定してください：名前は John Doe、住所は 1600 Amphitheatre Pkwy, Mountain View, CA、郵便番号は 94043、メールアドレスは john.doe@example.com です"}]
+      },
+      "reference": {
+        "response": {
+          "role": "model",
+          "parts": [{"text": "`update_customer_details` ツールを適切な引数（名前、住所、郵便番号、Eメールなど）で呼び出し、配送先情報を設定します。"}]
+        }
+      }
+    },
+    {
+      "eval_case_id": "step4_complete_checkout",
+      "prompt": {
+        "role": "user",
+        "parts": [{"text": "今すぐ私のチェックアウトを完了してください"}]
+      },
+      "reference": {
+        "response": {
+          "role": "model",
+          "parts": [{"text": "`complete_checkout` ツールを呼び出して、現在のセッションの決済とチェックアウトを完了させます。"}]
         }
       }
     }

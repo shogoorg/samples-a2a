@@ -219,6 +219,8 @@ def update_customer_details(
     checkout = store.add_delivery_address(checkout_id, address)
     if email:
         checkout.buyer = Buyer(email=email)
+        store._checkouts[checkout_id] = checkout
+        store._save_checkouts()
 
     return start_payment(tool_context)
 
