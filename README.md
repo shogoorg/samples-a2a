@@ -1,13 +1,12 @@
 # samples-a2a
 
-## Architectural Choice (A2A In-Memory Unified vs. REST API Integration) /アーキテクチャの選択（A2Aインメモリ一体型 vs REST API連携型） 
 ### English
 
-This project (A2A version) is submitted to the **[DevOps × AI Agent Hackathon](https://findy.notion.site/devops-ai-agent-hackathon-2026)**, while the REST API integration version is submitted to the **[AI Agents: Intensive Vibe Coding Capstone Project](https://www.kaggle.com/competitions/vibecoding-agents-capstone-project)**. Each adopts the optimal architecture tailored to its respective hackathon requirements.
+This project (A2A version) is submitted to the **[DevOps × AI Agent Hackathon](https://findy.notion.site/devops-ai-agent-hackathon-2026)**, while [the REST API integration version](https://github.com/shogoorg/samples-rest) is submitted to the **[AI Agents: Intensive Vibe Coding Capstone Project](https://www.kaggle.com/competitions/vibecoding-agents-capstone-project)**. Each adopts the optimal architecture tailored to its respective hackathon requirements.
 
 | Comparison Metric | A2A In-Memory Unified [This Project] | REST API Integration (Traditional Distributed) |
 | :--- | :--- | :--- |
-| **Target Hackathon** | **[DevOps × AI Agent Hackathon](https://findy.notion.site/devops-ai-agent-hackathon-2026)** | **[AI Agents: Intensive Vibe Coding Capstone Project](https://www.kaggle.com/competitions/vibecoding-agents-capstone-project)** |
+| Target Hackathon | DevOps × AI Agent Hackathon | AI Agents: Intensive Vibe Coding Capstone Project |
 | **System Coupling** | Unified / Co-located | Decoupled |
 | **Communication Flow** | The agent runtime and DB are co-located in a single FastAPI process, executing data operations directly in-memory | The agent and the merchant server communicate over the network via APIs |
 | **Primary Benefits** | Zero network overhead for ultra-low latency; immune to network/transport failures, ensuring deterministic execution | Standard client-server structure, making it highly portable and easier to integrate with real production systems |
@@ -15,11 +14,11 @@ This project (A2A version) is submitted to the **[DevOps × AI Agent Hackathon](
 
 ### 日本語 / Japanese
 
-本プロジェクト（A2A版）は「[DevOps × AI Agent Hackathon](https://findy.notion.site/devops-ai-agent-hackathon-2026)」へ、もう一方のREST API連携版は「[AI Agents: Intensive Vibe Coding Capstone Project](https://www.kaggle.com/competitions/vibecoding-agents-capstone-project)」へそれぞれ提出されており、それぞれの目的や要件に合わせて最適なアーキテクチャを採用しています。
+本プロジェクト（A2A版）は[DevOps × AI Agent Hackathon](https://findy.notion.site/devops-ai-agent-hackathon-2026)へ、もう一方の[REST API連携版](https://github.com/shogoorg/samples-rest)は「[AI Agents: Intensive Vibe Coding Capstone Project](https://www.kaggle.com/competitions/vibecoding-agents-capstone-project)」へそれぞれ提出されており、それぞれの目的や要件に合わせて最適なアーキテクチャを採用しています。
 
 | 比較項目 | A2Aインメモリ一体型構成 [本作] | REST API連携構成 (分散型) |
 | :--- | :--- | :--- |
-| **提出先ハッカソン** | **[DevOps × AI Agent Hackathon](https://findy.notion.site/devops-ai-agent-hackathon-2026)** | **[AI Agents: Intensive Vibe Coding Capstone Project](https://www.kaggle.com/competitions/vibecoding-agents-capstone-project)** |
+| **提出先** | DevOps × AI Agent Hackathon| AI Agents: Intensive Vibe Coding Capstone Project |
 | **システム結合度** | 密結合・インメモリ一体型 | 疎結合 |
 | **通信形態** | 単一のFastAPIプロセス内にエージェントランタイムとモックDBを同居、インメモリで直接データ操作 | エージェントと加盟店サーバーがネットワーク経由で通信 |
 | **主なメリット** | ネットワークオーバーヘッドが皆無で超高速。通信障害のリスクがなく、強固な決定論的実行が可能 | 標準的なクライアント・サーバー構成。既存の外部APIや実システムへの移行・統合が容易 |
@@ -33,7 +32,7 @@ This project (A2A version) is submitted to the **[DevOps × AI Agent Hackathon](
 
 agents-cliは、Gemini Enterprise Agent Platform 上でエージェントを構築するための CLI およびエージェントスキル（ライブラリ）です。
 
-Cymbal Retail Agent（Python/FastAPI）は、Google の内外どちらでもデプロイできるように設計された、UCP Merchant Server と A2A 拡張の参照実装です。
+Cymbal Retail Agent（Python/FastAPI）は、Google の内外どちらでもデプロイできるように設計された、UCPとA2A拡張の参照実装です。
 
 免責事項：本リポジトリは Cymbal Retail Agent with UCP Extension and A2Aのクローンおよび再利用バージョンであり、agents-cliを使用した対話型ショッピングフローおよびエージェントの検証をサポートするためにリファクタリングされています。
 
@@ -46,7 +45,7 @@ agent/
 │   ├── a2a_extensions/        # A2Aプロトコル（UCP拡張仕様）の解決とアクティベーション
 │   │   ├── base_extension.py
 │   │   └── ucp_extension.py
-│   ├── agent.py               # ADK 2.0エージェント定義およびツールのバインド
+│   ├── agent.py               # ADKエージェント定義およびツールのバインド
 │   ├── fast_api_app.py        # FastAPIサーバー、A2Aルート、JSON-RPCハンドラー
 │   ├── payment_processor.py   # インメモリ模擬決済ロジック
 │   ├── store.py               # インメモリUCPストア（Mock DB）およびセッション同期
@@ -62,14 +61,14 @@ agent/
 
 ## アーキテクチャ概要
 
-本A2A版（samples-a2a）アーキテクチャの最大の特徴は、エージェント（ADK 2.0 ランタイム）と加盟店ストアバックエンド（Mock DB / 決済ロジック）が、ネットワークを介さず単一のFastAPIホストプロセス内の同一メモリ空間に同居（Co-located）している点にあります。
+本A2A版（samples-a2a）アーキテクチャの最大の特徴は、エージェント（ADK ランタイム）と加盟店ストアバックエンド（Mock DB / 決済ロジック）が、ネットワークを介さず単一のFastAPIホストプロセス内の同一メモリ空間にある（Co-located）点にあります。A2Aクライアント（他エージェント）との間では、JSON-RPC 2.0（`execute` メソッド）に準拠したメッセージングと、セッションIDによる状態同期を行います。
 
 ```mermaid
 graph TD
     User["ユーザー / CLI / A2Aクライアント"] -->|自然言語インテント / JSON-RPC| FastAPI["FastAPI Server - fast_api_app.py -"]
     
     subgraph Single_Process_Space ["単一プロセスメモリ空間 - Unified Host -"]
-        FastAPI -->|コンテキスト転送 / A2Aルーティング| ADK["ADK 2.0 Runtime - agent.py -"]
+        FastAPI -->|コンテキスト転送 / A2Aルーティング| ADK["ADK Runtime - agent.py -"]
         ADK -->|Root Agent / Shopper Agent| LLM["gemini-flash-latest"]
         
         FastAPI -->|拡張のアクティベーション| Extensions["A2A Extensions - a2a_extensions/ -"]
@@ -84,22 +83,20 @@ graph TD
     Store -->|状態同期 / --session-id 検証| FastAPI
     ADK -.->|otel_to_cloud=True| GCP[Google Cloud Trace / Logging ]
 ```
-※ A2Aクライアント（他エージェント）との間では、JSON-RPC 2.0（`execute` メソッド）に準拠したメッセージングと、セッションIDによる状態同期を行います。
-
 
 ### コンポーネントの説明
 
-1. **FastAPIサーバー ([fast_api_app.py](agent/app/fast_api_app.py))**: エージェントランタイムをホストし、外部からの対話リクエストや将来的なエージェント間連携のためのJSON-RPCエンドポイントを公開します。
-2. **A2A拡張モジュール ([a2a_extensions/](agent/app/a2a_extensions/))**: A2Aクライアント（他エージェント）との通信において、UCP仕様などのプロトコル拡張の解決、および機能のアクティベーションを管理するネゴシエーション層です。
-3. **ADKエージェント ([agent.py](agent/app/agent.py))**: gemini-flash-latest をコアに、自然言語インテントの解釈から7ステップのコマースパイプライン（カタログ検索、カート追加、チェックアウト、決済）を自律的に制御します。
-4. **インメモリ状態管理・決済 ([store.py](agent/app/store.py), [payment_processor.py](agent/app/payment_processor.py))**: UCP A2A仕様に準拠したデータ操作ロジック。ネットワークを介さず、エージェントスキル（ツール）から直接Python関数として呼び出されます。
+1. **FastAPIサーバー (fast_api_app.py)**: エージェントランタイムをホストし、外部からの対話リクエストや将来的なエージェント間連携のためのJSON-RPCエンドポイントを公開します。
+2. **A2A拡張モジュール (a2a_extensions/)**: A2Aクライアント（他エージェント）との通信において、UCP仕様などのプロトコル拡張の解決、および機能のアクティベーションを管理するネゴシエーション層です。
+3. **ADKエージェント (agent.py)**: gemini-flash-latest をコアに、自然言語インテントの解釈から4ステップのコマースパイプライン（カタログ検索、カート追加、配送先設定、決済完了）を自律的に制御します。
+4. **インメモリ状態管理・決済 (store.py, payment_processor.py)**: UCP A2A仕様に準拠したデータ操作ロジック。ネットワークを介さず、エージェントスキル（ツール）から直接Python関数として呼び出されます。
 
 ## アーキテクチャの詳細
 
 1. **ビジネス課題の解決策**
-   断片化されたAPIや手動の「バイブスチェック」によるシステム間連携の不具合、人的ミスを、ADK 2.0による自律的なコマースオーケストレーションによって解決します。多言語での曖昧な入力に対しても、一貫した取引パイプラインを自動生成・実行します。
+   断片化されたAPIや手動の「バイブスチェック」によるシステム間連携の不具合、人的ミスを、ADKによる自律的なコマースオーケストレーションによって解決します。多言語での曖昧な入力に対しても、一貫した取引パイプラインを自動生成・実行します。
 2. **既存ツールセットの活用**
-   既存の加盟店ビジネスロジックや決済アセット（[store.py](agent/app/store.py), [payment_processor.py](agent/app/payment_processor.py)）を破棄することなく、ADK 2.0のデコレーター（`@tool`）を用いてそのままエージェントスキルとして統合。IT資産を最大化しつつ高速にAI化を実現します。
+   既存の加盟店ビジネスロジックや決済アセット（[store.py](agent/app/store.py), [payment_processor.py](agent/app/payment_processor.py)）を破棄することなく、ADKのデコレーター（`@tool`）を用いてそのままエージェントスキルとして統合。IT資産を最大化しつつ高速にAI化を実現します。
 3. **決定論的なセキュリティガードレール**
    すべての対話およびインメモリ操作において、連続する端末コマンド全体で検証済みの `--session-id` フラグの要求を決定論的に強制します。これにより、プロンプトインジェクションやハルシネーションによる不正なカート改ざん（価格変更や数量の不正操作など）をシステム層でシャットアウトします。
 4. **A2A 通信プロトコル**
@@ -110,7 +107,7 @@ graph TD
 ## 主要コード実装
 
 ### 1. エージェントの定義とツール登録 ([agent.py](agent/app/agent.py))
-ADK 2.0を用いてエージェントを構築し、インメモリのストア操作関数を自律的ツールとしてバインドします。
+ADKを用いてエージェントを構築し、インメモリのストア操作関数を自律的ツールとしてバインドします。
 
 ```python
 # app/agent.py
@@ -199,26 +196,14 @@ class A2AExtensionBase(ABC):
             context.add_activated_extension(self.get_extension_uri())
 ```
 
-## 事前準備
+## ローカル開発手順
 
-開始する前に、以下が準備およびインストールされていることを確認してください。
-- **uv**: Python パッケージマネージャー (このプロジェクトのすべての依存関係管理に使用) — [インストール方法](https://docs.astral.sh/uv/getting-started/installation/)
-- **agents-cli**: エージェント CLI — `uv tool install google-agents-cli` でインストール
-- **Google Cloud SDK (gcloud)**: GCP サービス用 — [インストール方法](https://cloud.google.com/sdk/docs/install)
-- **Gemini API キー**: エージェントの思考エンジン（自然言語の理解やツール呼び出しの判定）に必要です。
-  * **設定方法**: [agent/.env](agent/.env) ファイルを作成し、以下のようにキーを設定してください。
-    ```env
-    GEMINI_API_KEY=your_gemini_api_key_here
-    ```
-
-## クイックスタート
-
-エージェントプロジェクトのディレクトリに移動します：
+ローカル環境でエージェントをテスト・動作させるには、まず `agent` ディレクトリに移動します：
 ```bash
 cd agent
 ```
 
-### 1. 依存関係のインストール
+### 依存関係のインストール
 `agents-cli` および関連スキルをセットアップします（未実行の場合）：
 ```bash
 uvx google-agents-cli setup
@@ -229,41 +214,20 @@ uvx google-agents-cli setup
 agents-cli install
 ```
 
-### 2. 事前検証と品質チェック
-サーバーを起動する前に、コードの健全性とエージェントの基本性能を検証します。
-
-#### 静的解析（品質チェック）
-```bash
-agents-cli lint
-```
-
-#### 自動評価（ACLI Eval）の実行
-エージェントがカート操作や配送先設定などの各コマースツールを正しく呼び出せるかを自動採点します（評価データセットは [basic-dataset.json](agent/tests/eval/datasets/basic-dataset.json) に定義されています）。
-```bash
-agents-cli eval generate
-agents-cli eval grade
-```
-
-#### テストスイート（unit / integration）の実行
-※環境変数に `GEMINI_API_KEY` が設定されていることを確認してください。
-```bash
-uv run pytest tests/unit tests/integration
-```
-
-### 3. ローカルサーバーの起動
+### ローカルサーバーの起動
 他エージェントとのA2A通信エンドポイントをホストするローカルサーバーを起動します：
 ```bash
 uv run uvicorn app.fast_api_app:app --reload --port 8000
 ```
 
-### 4. Web UIでの対話テスト
+### Web UIでの対話テスト
 **別のターミナルを開き**（`cd agent` でディレクトリ移動後）、`agents-cli` 標準のプレイグラウンドUIを起動してブラウザ上でチャットテストを行います：
 ```bash
 agents-cli playground
 ```
 起動後、ブラウザで表示されるURLにアクセスして対話します。
 
-### 5. CLIからの対話テスト
+### CLIからの対話テスト
 **別のターミナルで**、セッションIDを指定して実行することで、一連のショッピングフロー（検索 ➔ カート追加 ➔ 配送先登録 ➔ 決済完了）を対話テストできます。
 
 #### 日本語セッションでの実行例
@@ -296,6 +260,16 @@ agents-cli run "Set my shipping info: name is John Doe, address is 1600 Amphithe
 
 # 4. 決済完了テスト
 agents-cli run "Complete my checkout now" --session-id <SESSION_ID>
+```
+
+### 事前検証と品質チェック
+サーバーを起動する前に、コードの健全性とエージェントの基本性能を検証します。
+
+#### 自動評価（ACLI Eval）の実行
+エージェントがカート操作や配送先設定などの各コマースツールを正しく呼び出せるかを自動採点します（評価データセットは [basic-dataset.json](agent/tests/eval/datasets/basic-dataset.json) に定義されています）。
+```bash
+agents-cli eval generate
+agents-cli eval grade
 ```
 
 ## デプロイ
@@ -367,3 +341,19 @@ agents-cli deploy --status
 
 - **Cloud Trace**: エージェントのツール呼び出し（インメモリ関数）のレイテンシと実行パスの可視化
 - **Cloud Logging**: プロンプトインジェクション検出やエラーハンドリングのログ記録
+
+## デモ
+
+本プロジェクトの動作や開発・評価ワークフローを紹介するデモ動画です。
+
+* **デモ動画 1 (YouTube)**: [https://youtu.be/hfwU5jKTzXc](https://youtu.be/hfwU5jKTzXc)
+  * **動画の構成 (再生時間: 1分29秒)**:
+    プロジェクトの特徴を分かりやすく簡潔に紹介するため、動画は以下の2つのセグメントで構成されています。
+    * **日本語によるデモ**: 端末で日本語プロンプトを使用し、製品カタログ検索からチェックアウト、決済完了までのE2E（エンドツーエンド）の4ステップ商取引パイプラインを実演します。
+    * **英語によるデモ**: 端末で英語プロンプトを使用して同様の4ステップ商取引パイプラインを実演し、エージェントの多言語対応および堅牢なセッション状態追跡機能を紹介します。
+* **デモ動画 2 (YouTube)**: [https://youtu.be/P6X4SSsoNEc](https://youtu.be/P6X4SSsoNEc)
+  * **動画の構成**:
+    CLI（`agents-cli`）を用いたエージェントのセットアップ、起動、対話型テスト、および評価の実行ワークフローを実演しています。
+    * **セットアップと起動**: `agents-cli install`、Uvicornによるローカルサーバー起動、および `agents-cli playground` の起動。
+    * **CLIによる対話型テスト**: `agents-cli run` を使用し、セッションIDを引き継ぎながら日本語と英語のプロンプトでショッピングから決済完了までを実行。
+    * **評価の実行**: `agents-cli eval generate` および `agents-cli eval grade` による評価データの生成と自動採点の実行。
